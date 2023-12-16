@@ -1,4 +1,6 @@
-﻿namespace CodeFlowUI
+﻿using CodeFlowUI.Styles;
+
+namespace CodeFlowUI
 {
     partial class LandingPage
     {
@@ -57,24 +59,22 @@
         private void InitLogo()
         {
 
-            PictureBox pictureBox = new PictureBox();
-            pictureBox.Location = new Point(160, 260);
-            pictureBox.Width = 960;
-            pictureBox.Height = 312;
-            pictureBox.SizeMode = PictureBoxSizeMode.StretchImage;
-            pictureBox.Image = Image.FromFile(@"Resources\logo-nome.png");
+            PictureBox logo = new Logo();
+            logo.Location = new Point(160, 260);
+            logo.Width = 960;
+            logo.Height = 312;
 
-            this.Controls.Add(pictureBox);
+            this.Controls.Add(logo);
 
-            Label label = new Label();
-            label.Location = new Point(482, 572);
-            label.Width = 350;
-            label.Height = 38;
-            label.Text = "by Vitória Tenório";
-            label.ForeColor = ColorTranslator.FromHtml("#7DA5FA");
-            label.Font = new Font("Codec Warm Trial", 28, FontStyle.Regular);
+            Label signature = new Label();
+            signature.Location = new Point(482, 572);
+            signature.Width = 350;
+            signature.Height = 38;
+            signature.Text = "by Vitória Tenório";
+            signature.ForeColor = ColorTranslator.FromHtml("#7DA5FA");
+            signature.Font = new Font("Codec Warm Trial", 28, FontStyle.Regular);
 
-            this.Controls.Add(label);
+            this.Controls.Add(signature);
         }
 
     }
