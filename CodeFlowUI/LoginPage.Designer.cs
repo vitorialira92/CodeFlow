@@ -1,4 +1,8 @@
-﻿namespace CodeFlowUI
+﻿
+
+using CodeFlowUI.Styles;
+
+namespace CodeFlowUI
 {
     partial class LoginPage
     {
@@ -30,8 +34,50 @@
         {
             this.components = new System.ComponentModel.Container();
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
-            this.Text = "LoginPage";
+            this.ClientSize = new System.Drawing.Size(1280, 832);
+            this.Text = "CodeFlow";
+            this.StartPosition = FormStartPosition.CenterScreen;
+            this.BackColor = Color.White;
+            InitScreen();
+        }
+
+        private void InitScreen()
+        {
+            InitLogo();
+            InitTextBox();
+            InitButtons();
+        }
+
+        private void InitButtons()
+        {
+            CallToActionButton login = new CallToActionButton("LOGIN", 224,57);
+            login.Location = new System.Drawing.Point(528, 564);
+            this.Controls.Add(login);
+
+            Button register = new GradientButton("REGISTER", 224, 57);
+            register.Location = new System.Drawing.Point(528, 643);
+            this.Controls.Add(register);
+        }
+
+        private void InitTextBox()
+        {
+            LightBlueTextBox emailTextBox = new LightBlueTextBox("Email", 681, 60);
+            emailTextBox.Location = new System.Drawing.Point(299,356);
+            this.Controls.Add(emailTextBox);
+
+            PasswordBox passwordTextBox = new PasswordBox("Password", 681, 60);
+            passwordTextBox.Location = new System.Drawing.Point(299, 444);
+            this.Controls.Add(passwordTextBox);
+        }
+
+        private void InitLogo()
+        {
+            PictureBox logo = new Logo();
+            logo.Location = new Point(335, 129);
+            logo.Width = 610;
+            logo.Height = 199;
+
+            this.Controls.Add(logo);
         }
 
         #endregion
