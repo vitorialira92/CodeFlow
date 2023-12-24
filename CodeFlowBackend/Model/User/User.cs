@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeFlowBackend.Model.User.Enum;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
@@ -12,70 +13,35 @@ namespace CodeFlowBackend.Model.User
         public int Id { get; private set; }
         public string Username { get; private set; }
         public string Email { get; private set; }
-        private string _password;
+        internal string _password { get; }
         public string FirstName { get; private set; }
         public string LastName { get; private set;}
         public DateTime DateJoined { get; }
-        public DateTime LastLogin {  get; private set; }
-        public bool IsLoggedIn { get; private set; }    
-        public User(string username, string firstName, string lastName, string password)
+        public UserRole Role { get; private set; }
+        public User(string username, string firstName, string lastName, string email, string password, UserRole role)
         {
-            this.Id = CalculateId();
             this.Username = username;
             this.FirstName = firstName;
             this.LastName = lastName;
-            this._password = GetHashedPassword(password);
+            this.Email = email;
+            this._password = password;
             this.DateJoined = DateTime.Now;
+            this.Role = role;
         }
-
-        private int CalculateId()
+        public User(int Id, string username, string firstName, string lastName, string email, string password, UserRole role)
         {
-            return DateTime.Now.GetHashCode();
+            this.Id = Id;
+            this.Username = username;
+            this.FirstName = firstName;
+            this.LastName = lastName;
+            this.Email= email;
+            this._password = password;
+            this.DateJoined = DateTime.Now;
+            this.Role = role;
         }
 
-        private string GetHashedPassword(string password)
-        {
-            byte[] salt;
-            new RNGCryptoServiceProvider().GetBytes(salt = new byte[16]);
-
-            var pbkdf2 = new Rfc2898DeriveBytes(password, salt, 2500);
-
-            byte[] hash = pbkdf2.GetBytes(30);
-            byte[] hashBytes = new byte[hash.Length + salt.Length];
-
-            Array.Copy(salt, 0, hashBytes, 0, salt.Length);
-            Array.Copy(hash, 0, hashBytes, salt.Length, hash.Length);
-
-            return Convert.ToBase64String(hashBytes);
-        }
-
-        public bool CheckPassword(string password)
-        {
-            byte[] hashBytes = Convert.FromBase64String(_password);
-
-            byte[] salt = new byte[16];
-
-            Array.Copy(hashBytes, 0, salt, 0, 16);
-
-            var pbkdf2 = new Rfc2898DeriveBytes(password, salt, 2500);
-
-            byte[] hash = pbkdf2.GetBytes(30);
-
-            return hash.Equals(hashBytes);
-        }
-
-        public void Login()
-        {
-            this.IsLoggedIn = true;
-        }
-
-        public void LogOut()
-        {
-            this.IsLoggedIn = false;
-            this.LastLogin = DateTime.Now;
-        }
-
-        public abstract override string ToString();
+        
+        
     }
     
 }
