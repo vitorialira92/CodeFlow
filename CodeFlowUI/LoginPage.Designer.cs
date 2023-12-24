@@ -1,20 +1,20 @@
-﻿
-
+﻿using CodeFlowBackend.DTO;
+using CodeFlowBackend.Services;
 using CodeFlowUI.Styles;
+using Microsoft.VisualBasic.ApplicationServices;
 
 namespace CodeFlowUI
 {
     partial class LoginPage
     {
-        /// <summary>
-        /// Required designer variable.
-        /// </summary>
+
         private System.ComponentModel.IContainer components = null;
 
-        /// <summary>
-        /// Clean up any resources being used.
-        /// </summary>
-        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        private RoundedButton login;
+        private RoundedButton register;
+
+        private RoundedTextBox usernameTextBox;
+        private PasswordTextBox passwordTextBox;
         protected override void Dispose(bool disposing)
         {
             if (disposing && (components != null))
@@ -24,20 +24,17 @@ namespace CodeFlowUI
             base.Dispose(disposing);
         }
 
-        #region Windows Form Designer generated code
+        #region Interface Design
 
-        /// <summary>
-        /// Required method for Designer support - do not modify
-        /// the contents of this method with the code editor.
-        /// </summary>
         private void InitializeComponent()
-        {
-            this.components = new System.ComponentModel.Container();
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1280, 832);
-            this.Text = "CodeFlow";
-            this.StartPosition = FormStartPosition.CenterScreen;
-            this.BackColor = Color.White;
+        { 
+            AutoScaleMode = AutoScaleMode.Font;
+            BackColor = Color.White;
+            ClientSize = new Size(1280, 832);
+            Name = "LoginPage";
+            StartPosition = FormStartPosition.CenterScreen;
+            Text = "CodeFlow";
+            FormClosed += LoginPage_FormClosed;
             InitScreen();
         }
 
@@ -50,22 +47,29 @@ namespace CodeFlowUI
 
         private void InitButtons()
         {
-            CallToActionButton login = new CallToActionButton("LOGIN", 224,57);
+            login = new RoundedButton("LOGIN", 224, 57, Colors.CallToActionButton, 32);
             login.Location = new System.Drawing.Point(528, 564);
+            login.Click += new EventHandler(loginButton_Click);
             this.Controls.Add(login);
 
-            Button register = new GradientButton("REGISTER", 224, 57);
+            register = new RoundedButton("REGISTER", 224, 57, Colors.SecondaryButton, 32);
             register.Location = new System.Drawing.Point(528, 643);
+            register.Click += new EventHandler(registerButton_Click);
             this.Controls.Add(register);
+        }
+
+        private void Register_Click(object sender, EventArgs e)
+        {
+            throw new NotImplementedException();
         }
 
         private void InitTextBox()
         {
-            LightBlueTextBox emailTextBox = new LightBlueTextBox("Email", 681, 60);
-            emailTextBox.Location = new System.Drawing.Point(299,356);
-            this.Controls.Add(emailTextBox);
+            usernameTextBox = new RoundedTextBox("Username", 680,60);
+            usernameTextBox.Location = new Point(299, 356);
+            this.Controls.Add(usernameTextBox);
 
-            PasswordBox passwordTextBox = new PasswordBox("Password", 681, 60);
+            passwordTextBox = new PasswordTextBox(680, 60);
             passwordTextBox.Location = new System.Drawing.Point(299, 444);
             this.Controls.Add(passwordTextBox);
         }
@@ -81,5 +85,35 @@ namespace CodeFlowUI
         }
 
         #endregion
+
+        private void loginButton_Click(object sender, EventArgs e)
+        {
+            long userId = UserService.Login(usernameTextBox.GetText(), passwordTextBox.GetText());
+            MessageBox.Show($"Pass: {passwordTextBox.GetText()}");
+            if (userId != -1)
+            {
+                HomePage homePage = new HomePage(userId);
+                homePage.Show();
+                this.Hide();
+            }
+            else
+            {
+                Label errorMessage = new Label();
+                errorMessage.Text = "Username or password incorrect.";
+                errorMessage.Location = new Point(325, 516);
+                errorMessage.ForeColor = Colors.ErrorColor;
+                errorMessage.Font = new Font("Ubuntu", 8);
+                errorMessage.Size = new Size(680, 40);
+                this.Controls.Add(errorMessage);
+            }
+            
+        }
+
+        private void registerButton_Click(object sender, EventArgs e)
+        {
+            RegisterPage registerPage = new RegisterPage();
+            registerPage.Show();
+            this.Hide();
+        }
     }
 }
