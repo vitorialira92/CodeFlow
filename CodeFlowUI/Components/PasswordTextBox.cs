@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CodeFlowUI.Styles;
 
-namespace CodeFlowUI.Styles
+namespace CodeFlowUI.Components
 {
     internal class PasswordTextBox : UserControl
     {
@@ -26,7 +27,8 @@ namespace CodeFlowUI.Styles
                 Font = new Font("Ubuntu", 16)
             };
 
-            this.TextBox.Enter += new EventHandler((object sender, EventArgs e) => {
+            TextBox.Enter += new EventHandler((sender, e) =>
+            {
                 TextBox textBox = sender as TextBox;
                 if (textBox.Text == hintText)
                 {
@@ -35,7 +37,8 @@ namespace CodeFlowUI.Styles
                     textBox.UseSystemPasswordChar = true;
                 }
             });
-            this.TextBox.Leave += new EventHandler((object sender, EventArgs e) => {
+            TextBox.Leave += new EventHandler((sender, e) =>
+            {
                 TextBox textBox = sender as TextBox;
                 if (string.IsNullOrEmpty(textBox.Text) || textBox.Text.Equals(hintText))
                 {
@@ -45,10 +48,10 @@ namespace CodeFlowUI.Styles
                 }
             });
 
-            this.Size = new Size(width, height);
-            this.Padding = new Padding(10);
-            this.BackColor = Color.White;
-            this.Controls.Add(TextBox);
+            Size = new Size(width, height);
+            Padding = new Padding(10);
+            BackColor = Color.White;
+            Controls.Add(TextBox);
         }
 
         internal string GetText()
