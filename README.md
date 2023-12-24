@@ -6,7 +6,7 @@
 ![.Net](https://img.shields.io/badge/.NET-5C2D91?style=for-the-badge&logo=.net&logoColor=white)
 ![SQLite](https://img.shields.io/badge/sqlite-%2307405e.svg?style=for-the-badge&logo=sqlite&logoColor=white)
 
-<h3>resumo do projeto vem aqui</h3>
+<h3>CodeFlow é um aplicativo desktop para gerenciamento de equipes de desenvolvimento de software, onde um TechLeader coordena diversas equipes :)</h3>
 
 ## Table of Contents
 
