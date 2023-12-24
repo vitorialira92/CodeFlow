@@ -3,17 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CodeFlowUI.Styles;
 
-namespace CodeFlowUI.Styles
+namespace CodeFlowUI.Components
 {
     using CodeFlowBackend.Model;
     internal class ProjectCard : Panel
     {
         public ProjectCard(string projectName, string description, DateTime dueDate, ProjectStatus status)
         {
-            this.Width = 260;
-            this.Height = 140;
-            this.BorderStyle = BorderStyle.None;
+            Width = 260;
+            Height = 140;
+            BorderStyle = BorderStyle.None;
             AddProjectName(projectName);
             AddDescription(description);
             AddDueDate(dueDate.Date);
@@ -24,14 +25,14 @@ namespace CodeFlowUI.Styles
         {
             Panel statusCircle = new Panel();
             statusCircle.Size = new Size(9, 9);
-            statusCircle.BackColor = Colors.ProjectCardBackgroundColor; 
+            statusCircle.BackColor = Colors.ProjectCardBackgroundColor;
 
             statusCircle.Paint += (sender, e) =>
             {
                 SolidBrush brush = new SolidBrush(GetStatusColor(status));
-                
-                    e.Graphics.FillEllipse(brush, 0, 0, statusCircle.Width, statusCircle.Height);
-                
+
+                e.Graphics.FillEllipse(brush, 0, 0, statusCircle.Width, statusCircle.Height);
+
             };
 
             Label statusLabel = new Label();
@@ -40,16 +41,16 @@ namespace CodeFlowUI.Styles
             statusLabel.AutoSize = true;
             statusLabel.BackColor = Color.Transparent;
 
-            int xPositionStatusLabel = this.Width - 20 - statusLabel.Width;
+            int xPositionStatusLabel = Width - 20 - statusLabel.Width;
             int xPositionStatusCircle = xPositionStatusLabel - 13;
 
             statusLabel.Location = new Point(xPositionStatusLabel, 113);
             statusCircle.Location = new Point(xPositionStatusCircle, 120);
 
 
-            this.Controls.Add(statusLabel);
+            Controls.Add(statusLabel);
 
-            this.Controls.Add(statusCircle);
+            Controls.Add(statusCircle);
         }
 
         private string GetStatusText(ProjectStatus status)
@@ -73,7 +74,7 @@ namespace CodeFlowUI.Styles
             dueDateLabel.Location = new Point(20, 114);
             dueDateLabel.AutoSize = true;
             dueDateLabel.BackColor = Color.Transparent;
-            this.Controls.Add(dueDateLabel);
+            Controls.Add(dueDateLabel);
         }
 
         private void AddDescription(string description)
@@ -84,7 +85,7 @@ namespace CodeFlowUI.Styles
             descriptionLabel.Location = new Point(20, 43);
             descriptionLabel.AutoSize = true;
             descriptionLabel.BackColor = Color.Transparent;
-            this.Controls.Add(descriptionLabel);
+            Controls.Add(descriptionLabel);
         }
 
         private void AddProjectName(string projectName)
@@ -96,17 +97,17 @@ namespace CodeFlowUI.Styles
             projectNameLabel.Location = new Point(20, 12);
             projectNameLabel.AutoSize = true;
             projectNameLabel.BackColor = Color.Transparent;
-            this.Controls.Add(projectNameLabel);
+            Controls.Add(projectNameLabel);
         }
         private Color GetStatusColor(ProjectStatus status)
         {
             switch (status)
             {
-                case ProjectStatus.Late:return Colors.LateProject; 
+                case ProjectStatus.Late: return Colors.LateProject;
                 case ProjectStatus.Open: return Colors.OpenProject;
                 case ProjectStatus.OnGoing: return Colors.OngoingProject;
                 case ProjectStatus.Done: return Colors.DoneProject;
-                default: return Colors.CanceledProject;  
+                default: return Colors.CanceledProject;
             }
         }
         protected override void OnPaint(PaintEventArgs e)
