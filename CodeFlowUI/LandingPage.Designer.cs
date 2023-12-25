@@ -4,15 +4,8 @@ namespace CodeFlowUI
 {
     partial class LandingPage
     {
-        /// <summary>
-        /// Required designer variable.
-        /// </summary>
         private System.ComponentModel.IContainer components = null;
 
-        /// <summary>
-        /// Clean up any resources being used.
-        /// </summary>
-        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
             if (disposing && (components != null))
@@ -22,22 +15,13 @@ namespace CodeFlowUI
             base.Dispose(disposing);
         }
 
-        #region Windows Form Designer
+        #region Windows Form Design
 
-        /// <summary>
-        /// Required method for Designer support - do not modify
-        /// the contents of this method with the code editor.
-        /// </summary>
         private void InitializeComponent()
         {
             InitializeComponentAsync();
         }
 
-
-        /// <summary>
-        ///  Required method for Designer support - do not modify
-        ///  the contents of this method with the code editor.
-        /// </summary>
         private async Task InitializeComponentAsync()
         {
             this.components = new System.ComponentModel.Container();
@@ -48,7 +32,7 @@ namespace CodeFlowUI
             this.BackColor = Color.White;
             InitLogo();
 
-            await Task.Delay(2000);
+            await Task.Delay(1500);
             LoginPage loginPage = new LoginPage();
             loginPage.Show();
             this.Hide();
@@ -58,6 +42,7 @@ namespace CodeFlowUI
 
         private void InitLogo()
         {
+            this.Icon = new Icon(@"Resources\icon.ico");
 
             PictureBox logo = new Logo();
             logo.Location = new Point(160, 260);
@@ -67,12 +52,12 @@ namespace CodeFlowUI
             this.Controls.Add(logo);
 
             Label signature = new Label();
-            signature.Location = new Point(482, 572);
+            signature.Location = new Point(530, 572);
             signature.Width = 350;
             signature.Height = 38;
             signature.Text = "by Vitória Tenório";
             signature.ForeColor = ColorTranslator.FromHtml("#7DA5FA");
-            signature.Font = new Font("Codec Warm Trial", 28, FontStyle.Regular);
+            signature.Font = new Font("Codec Warm Trial", 16, FontStyle.Regular);
 
             this.Controls.Add(signature);
         }
