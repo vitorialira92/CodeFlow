@@ -77,6 +77,8 @@ namespace CodeFlowUI
 
         private void InitLogo()
         {
+            this.Icon = new Icon(@"Resources\icon.ico");
+
             PictureBox logo = new Logo();
             logo.Location = new Point(335, 129);
             logo.Width = 610;
@@ -90,7 +92,7 @@ namespace CodeFlowUI
         private void loginButton_Click(object sender, EventArgs e)
         {
             long userId = UserService.Login(usernameTextBox.GetText(), passwordTextBox.GetText());
-            MessageBox.Show($"Pass: {passwordTextBox.GetText()}");
+
             if (userId != -1)
             {
                 HomePage homePage = new HomePage(userId);
