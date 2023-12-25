@@ -1,11 +1,9 @@
-﻿
-
-
-using CodeFlowBackend.Services;
+﻿using CodeFlowBackend.Services;
 using CodeFlowUI.Components;
 using CodeFlowUI.Styles;
 using System.Text.RegularExpressions;
 using CodeFlowBackend.DTO;
+using System.Text;
 
 namespace CodeFlowUI
 {
@@ -329,12 +327,15 @@ namespace CodeFlowUI
 
         private void ShowMessageForWrongFields(List<string> wrongFields)
         {
-            string message = "You entered wrong inputs for: ";
+            StringBuilder sb = new StringBuilder();
+            sb.Append("You entered wrong inputs for: ");
 
             foreach (var field in wrongFields)
             {
-                message += field + ", ";
+                sb.Append(field + ", ");
             }
+
+            string message = sb.ToString();
 
             if (message[message.Length - 2] == ',')
             {
