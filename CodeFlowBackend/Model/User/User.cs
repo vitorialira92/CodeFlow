@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace CodeFlowBackend.Model.User
 {
-    internal abstract class User
+    internal class User
     {
-        public int Id { get; private set; }
+        public long Id { get; private set; }
         public string Username { get; private set; }
         public string Email { get; private set; }
         internal string _password { get; }
@@ -28,7 +28,7 @@ namespace CodeFlowBackend.Model.User
             this.DateJoined = DateTime.Now;
             this.Role = role;
         }
-        public User(int Id, string username, string firstName, string lastName, string email, string password, UserRole role)
+        public User(long Id, string username, string firstName, string lastName, string email, string password, UserRole role)
         {
             this.Id = Id;
             this.Username = username;
@@ -40,8 +40,17 @@ namespace CodeFlowBackend.Model.User
             this.Role = role;
         }
 
-        
-        
+        public User(long Id, string username, string firstName, string lastName, string email, UserRole role)
+        {
+            this.Id = Id;
+            this.Username = username;
+            this.FirstName = firstName;
+            this.LastName = lastName;
+            this.Email = email;
+            this.DateJoined = DateTime.Now;
+            this.Role = role;
+        }
+
     }
     
 }
