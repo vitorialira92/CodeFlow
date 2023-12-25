@@ -9,7 +9,23 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\CodeFlowBackend\CodeFlowBackend.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Resources\back-login.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\icon.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Resources\logo-nome.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\username-available.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\username-not-available.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
