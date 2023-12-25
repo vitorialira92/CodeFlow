@@ -22,6 +22,7 @@ namespace CodeFlowUI.Components
                 Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right,
                 Width = width - 32,
                 Height = height,
+                Text = hintText,
                 BackColor = Colors.TextBox,
                 ForeColor = Colors.CallToActionText,
                 Font = new Font("Ubuntu", 16)
