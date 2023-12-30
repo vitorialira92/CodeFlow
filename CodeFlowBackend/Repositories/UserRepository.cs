@@ -269,5 +269,26 @@ namespace CodeFlowBackend.Repositories
 
             return userId;
         }
+
+        internal static string GetUserFirstNameById(long userId)
+        {
+            string userFirstName = "";
+            Open();
+
+            string query = @"SELECT first_name 
+                 FROM user
+                 WHERE id = @id;";
+            _command = new SQLiteCommand(query, _connection);
+            _command.Parameters.AddWithValue("@id", userId);
+
+            var reader = _command.ExecuteReader();
+
+            if (reader.Read())
+                userFirstName = reader["first_name"].ToString();
+
+            Close();
+
+            return userFirstName;
+        }
     }
 }
