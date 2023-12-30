@@ -15,6 +15,16 @@ namespace CodeFlowUI.Pages
         private System.ComponentModel.IContainer components = null;
         private Panel greetingPanel;
         private ProjectContainer projectContainer;
+        private Button addProjectButton;
+        private Button profileButton;
+        private Label myProjectsPanel;
+        private Label projectsStats;
+        private List<ProjectCard> projectsCards;
+
+
+        private List<ProjectBasicInfoDTO> projectBasicInfoDTOs;
+        private LoginResponseDTO loginResponseDTO;
+        private string userFirstName;
         
         protected override void Dispose(bool disposing)
         {
@@ -25,44 +35,127 @@ namespace CodeFlowUI.Pages
             base.Dispose(disposing);
         }
 
-        #region Windows Form Designer generated code
+        #region Rendering page
 
         private void InitializeComponent(LoginResponseDTO responseDTO)
         {
-            //this.user = UserService.GetUserBasicInfo(userId);
+            this.Icon = new Icon(@"Resources\icon.ico");
+
+            this.loginResponseDTO = responseDTO;
             this.components = new System.ComponentModel.Container();
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1280, 832);
             this.Text = "CodeFlow";
             this.StartPosition = FormStartPosition.CenterScreen;
             this.BackColor = Color.White;
+            FormClosed += HomePage_FormClosed;
+            InitData();
             InitScreen();
+        }
+
+
+        private void InitData()
+        {
+            this.projectBasicInfoDTOs = ProjectService.GetAllProjectsBasicInfoByUserId(loginResponseDTO.UserId!.Value);
+            this.userFirstName = UserService.GetUserFirstNameByID(loginResponseDTO.UserId!.Value);
         }
 
         private void InitScreen()
         {
-
-            this.projectContainer = new ProjectContainer();
-            this.projectContainer.Location = new Point(32,120);
-            Controls.Add(this.projectContainer);
-            ProjectCard projectCard = new ProjectCard("project name", "description", DateTime.Today, CodeFlowBackend.Model.ProjectStatus.Done);
-            projectCard.Location = new Point(40,92);
-            //Controls.Add(projectCard);
-            this.projectContainer.Controls.Add(projectCard);
-            projectCard.Click += new EventHandler(projectCard_onClick);
+            InitProjects();
             InitGreeting();
             InitButtons();
         }
 
-        private void projectCard_onClick(object sender, EventArgs e)
+        private void InitProjects()
         {
+            this.projectContainer = new ProjectContainer();
+            this.projectContainer.Location = new Point(32, 120);
+            this.Controls.Add(this.projectContainer);
+
+            this.myProjectsPanel = new Label();
+            this.myProjectsPanel.Text = "My projects";
+            this.myProjectsPanel.Font = new Font("Ubuntu", 12);
+            this.myProjectsPanel.Location = new Point(40, 32);
+            this.myProjectsPanel.Size = new Size(150, 30);
+            this.myProjectsPanel.ForeColor = Colors.DarkBlue;
+            this.projectContainer.Controls.Add(myProjectsPanel);
+
+            this.projectsCards = new List<ProjectCard>();
+            int x = 40, y = 92;
+            int count = 0;
+
+            int doneCount = 0, ongoingCount = 0, lateCount = 0, openCount = 0, canceledCount = 0;
+
+            foreach (var project in projectBasicInfoDTOs)
+            {
+                count++;
+                ProjectCard projectCard = new ProjectCard(project.name, project.description, project.dueDate, project.status);
+                projectCard.Location = new Point(x, y);
+
+                if (count % 4 == 0)
+                {
+                    x = 40;
+                    y = y + 140 + 32;
+                }
+                else
+                {
+                    x = x + 32 + 260;
+                }
+
+                projectCard.Click += new EventHandler((object sender, EventArgs e) => {
+                    new SpecificProjectPage(
+                    new ProjectPageDTO(project.id, this.loginResponseDTO.UserId!.Value, this.loginResponseDTO.isTechLeader!.Value)).Show(); this.Hide();
+                });
+                projectCard.Cursor = Cursors.Hand;
+
+                this.projectsCards.Add(projectCard);
+                this.projectContainer.Controls.Add(projectCard);
+
+                switch (project.status)
+                {
+                    case CodeFlowBackend.Model.ProjectStatus.Canceled: canceledCount++; break;
+                    case CodeFlowBackend.Model.ProjectStatus.Done: doneCount++; break;
+                    case CodeFlowBackend.Model.ProjectStatus.Late: lateCount++; break;
+                    case CodeFlowBackend.Model.ProjectStatus.OnGoing: ongoingCount++; break;
+                    default: openCount++; break;
+                }
+            }
+
+            this.addProjectButton = new Button();
+            this.addProjectButton.Image = Image.FromFile(@"Resources\button-add.png");
+            this.addProjectButton.Size = new Size(79, 84);
+            this.addProjectButton.Location = new Point(1119, 511);
+            this.addProjectButton.BackgroundImageLayout = ImageLayout.Zoom;
+            this.addProjectButton.FlatStyle = FlatStyle.Flat;
+            this.addProjectButton.FlatAppearance.BorderSize = 0;
+            this.addProjectButton.Click += new EventHandler((object sender, EventArgs e) =>
+            {
+                if (loginResponseDTO.isTechLeader!.Value)
+                    new CreateProjectPage(loginResponseDTO.UserId!.Value).Show();
+                else
+                    new EnterProjectPage(loginResponseDTO.UserId!.Value).Show();
+                this.Hide();
+            });
+
+            this.projectContainer.Controls.Add(addProjectButton);
+
+
+            this.projectsStats = new Label();
+            this.projectsStats.Text = $"{ongoingCount} on going | {doneCount} done " +
+                $"| {lateCount} late | {openCount} open | {canceledCount} canceled";
+            this.projectsStats.Font = new Font("Ubuntu", 8);
+            this.projectsStats.ForeColor = Colors.DarkBlue;
+            this.projectsStats.AutoSize = true;
+            this.projectContainer.Controls.Add(projectsStats);
             
+            this.projectsStats.Location = new Point(1216 - this.projectsStats.Width - 40, 32);
         }
 
         private void InitGreeting()
         {
             Label greetingLabel = new Label();
-            //greetingLabel.Text = $"Hello, {user.firstName}";
+            greetingLabel.Text = $"Hello, {this.userFirstName}";
             greetingLabel.Font = new Font("Ubuntu Bold", 40);
             greetingLabel.Location = new Point(32,32);
             greetingLabel.Size = new Size(1156, 74);
@@ -72,7 +165,19 @@ namespace CodeFlowUI.Pages
 
         private void InitButtons()
         {
-            
+            this.profileButton = new Button();
+            this.profileButton.Image = Image.FromFile(@"Resources\button-profile.png");
+            this.profileButton.Size = new Size(65, 65);
+            this.profileButton.Location = new Point(1188, 32);
+            this.profileButton.FlatStyle = FlatStyle.Flat;
+            this.profileButton.FlatAppearance.BorderSize = 0;
+            this.profileButton.Cursor = Cursors.Hand;
+            this.profileButton.Click += new EventHandler((object sender, EventArgs e) => {
+                    new ProfilePage(this.loginResponseDTO.UserId!.Value).Show();
+                    this.Hide();
+                });
+
+            this.Controls.Add(profileButton);
         }
 
         #endregion

@@ -18,5 +18,9 @@ namespace CodeFlowUI.Pages
         {
             InitializeComponent(responseDTO);
         }
+        private void HomePage_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            Application.Exit();
+        }
     }
 }
