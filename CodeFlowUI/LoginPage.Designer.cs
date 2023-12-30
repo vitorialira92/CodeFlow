@@ -80,7 +80,7 @@ namespace CodeFlowUI
         {
             this.Icon = new Icon(@"Resources\icon.ico");
 
-            PictureBox logo = new Logo();
+            Logo logo = new Logo();
             logo.Location = new Point(335, 129);
             logo.Width = 610;
             logo.Height = 199;
