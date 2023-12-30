@@ -8,7 +8,7 @@ using CodeFlowUI.Styles;
 namespace CodeFlowUI.Components
 {
     using CodeFlowBackend.Model;
-    internal class ProjectCard : Panel
+    public class ProjectCard : Panel
     {
         public ProjectCard(string projectName, string description, DateTime dueDate, ProjectStatus status)
         {
@@ -39,16 +39,16 @@ namespace CodeFlowUI.Components
             statusLabel.Text = GetStatusText(status);
             statusLabel.Font = new Font("Ubuntu Light", 8);
             statusLabel.AutoSize = true;
-            statusLabel.BackColor = Color.Transparent;
+            statusLabel.BackColor = Color.Transparent; 
+
+            Controls.Add(statusLabel);
 
             int xPositionStatusLabel = Width - 20 - statusLabel.Width;
+
             int xPositionStatusCircle = xPositionStatusLabel - 13;
 
             statusLabel.Location = new Point(xPositionStatusLabel, 113);
             statusCircle.Location = new Point(xPositionStatusCircle, 120);
-
-
-            Controls.Add(statusLabel);
 
             Controls.Add(statusCircle);
         }
