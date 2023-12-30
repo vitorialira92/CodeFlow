@@ -68,6 +68,11 @@ namespace CodeFlowBackend.Services
         {
             return UserRepository.GetUserIdByEmail(email) == 0;
         }
+
+        public static string GetUserFirstNameByID(long userId)
+        {
+            return UserRepository.GetUserFirstNameById(userId);
+        }
     }
 
 }
