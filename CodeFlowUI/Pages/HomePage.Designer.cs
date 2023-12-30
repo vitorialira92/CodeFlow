@@ -82,10 +82,16 @@ namespace CodeFlowUI.Pages
             this.projectContainer.Controls.Add(myProjectsPanel);
 
             this.projectsCards = new List<ProjectCard>();
-            int x = 40, y = 92;
+            int x = 0, y = 0;
             int count = 0;
 
             int doneCount = 0, ongoingCount = 0, lateCount = 0, openCount = 0, canceledCount = 0;
+
+            Panel projectsCardsPanel = new Panel();
+            projectsCardsPanel.BackColor = Color.Transparent;
+            projectsCardsPanel.Size = new Size(1166, 482);
+            projectsCardsPanel.Location = new Point(40, 92);
+            projectsCardsPanel.AutoScroll = true;
 
             foreach (var project in projectBasicInfoDTOs)
             {
@@ -95,7 +101,7 @@ namespace CodeFlowUI.Pages
 
                 if (count % 4 == 0)
                 {
-                    x = 40;
+                    x = 0;
                     y = y + 140 + 32;
                 }
                 else
@@ -110,7 +116,7 @@ namespace CodeFlowUI.Pages
                 projectCard.Cursor = Cursors.Hand;
 
                 this.projectsCards.Add(projectCard);
-                this.projectContainer.Controls.Add(projectCard);
+                projectsCardsPanel.Controls.Add(projectCard);
 
                 switch (project.status)
                 {
@@ -120,6 +126,8 @@ namespace CodeFlowUI.Pages
                     case CodeFlowBackend.Model.ProjectStatus.OnGoing: ongoingCount++; break;
                     default: openCount++; break;
                 }
+
+                this.projectContainer.Controls.Add(projectsCardsPanel);
             }
 
             this.addProjectButton = new Button();
@@ -129,6 +137,8 @@ namespace CodeFlowUI.Pages
             this.addProjectButton.BackgroundImageLayout = ImageLayout.Zoom;
             this.addProjectButton.FlatStyle = FlatStyle.Flat;
             this.addProjectButton.FlatAppearance.BorderSize = 0;
+            this.addProjectButton.BackColor = Color.Transparent;
+            this.addProjectButton.Cursor = Cursors.Hand;
             this.addProjectButton.Click += new EventHandler((object sender, EventArgs e) =>
             {
                 if (loginResponseDTO.isTechLeader!.Value)
@@ -137,8 +147,9 @@ namespace CodeFlowUI.Pages
                     new EnterProjectPage(loginResponseDTO.UserId!.Value).Show();
                 this.Hide();
             });
-
+            
             this.projectContainer.Controls.Add(addProjectButton);
+            this.addProjectButton.BringToFront();
 
 
             this.projectsStats = new Label();
@@ -150,6 +161,8 @@ namespace CodeFlowUI.Pages
             this.projectContainer.Controls.Add(projectsStats);
             
             this.projectsStats.Location = new Point(1216 - this.projectsStats.Width - 40, 32);
+            this.projectContainer.Invalidate();
+
         }
 
         private void InitGreeting()
