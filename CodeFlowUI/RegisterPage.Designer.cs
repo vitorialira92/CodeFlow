@@ -4,6 +4,7 @@ using CodeFlowUI.Styles;
 using System.Text.RegularExpressions;
 using CodeFlowBackend.DTO;
 using System.Text;
+using CodeFlowUI.Pages;
 
 namespace CodeFlowUI
 {
@@ -262,7 +263,7 @@ namespace CodeFlowUI
                 if (userId != -1)
                 {
                     MessageBox.Show("Account created succesfully!", "Welcome");
-                    HomePage homePage = new HomePage(userId);
+                    HomePage homePage = new HomePage(new LoginResponseDTO(userId, isTechLeader));
                     homePage.Show();
                     this.Hide();
                 }

@@ -19,18 +19,6 @@ namespace CodeFlowBackend.Repositories
         private static UserRepository _instance;
         private UserRepository() { }
 
-        public static UserRepository Instance
-        {
-            get
-            {
-                if (_instance == null)
-                {
-                    _instance = new UserRepository();
-                }
-                return _instance;
-            }
-        }
-
         private static bool AddUser(User user)
         {
             try
@@ -43,7 +31,7 @@ namespace CodeFlowBackend.Repositories
 
                 _command = new SQLiteCommand(query, _connection);
 
-                (string password, string salt) password_salt = HashUtil.GetHashedPassword(user._password);
+                (string password, string salt) password_salt = HashUtil.GetHashedAndSalt(user._password);
 
                 _command.Parameters.AddWithValue("@username", user.Username);
                 _command.Parameters.AddWithValue("@email", user.Email);
@@ -178,37 +166,55 @@ namespace CodeFlowBackend.Repositories
                 Close();
             }
         }
-            
-        public static long Login(string username, string password)
+           
+
+        internal static (long? id, bool? isTechLeader) Login(string username, string password)
         {
-            long userId = -1;
-
-            Open();
-
-            string query = @"SELECT u.id, u.password, u.role, s.salt 
-                 FROM user u
-                 INNER JOIN user_salt s ON u.id = s.user_id 
-                 WHERE u.username = @username;";
-            _command = new SQLiteCommand(query, _connection);
-            _command.Parameters.AddWithValue("@username", username);
-
-            var reader = _command.ExecuteReader();
-
-            if (reader.Read()) 
+            try
             {
-                long id = (long)reader["id"];
-                string hashedPassword = reader["password"].ToString();
+                Open();
 
-                string salt = reader["salt"].ToString();
+                string query = @"SELECT s.salt FROM user_salt s INNER JOIN user u ON u.id = s.user_id where u.username=@username;";
+                _command = new SQLiteCommand(query, _connection);
+                _command.Parameters.AddWithValue("@username", username);
 
-                if (HashUtil.CheckPassword(password, hashedPassword, salt))
-                    userId = id;
+                var reader = _command.ExecuteReader();
+
+                if (reader.Read())
+                {
+                    string salt = reader["salt"].ToString();
+                    string hashedPassword = HashUtil.GetHashedWithGivenSalt(password, salt);
+                    if (hashedPassword == "")
+                        return (null, null);
+
+                    query = @"SELECT id, role
+                     FROM User 
+                     WHERE username=@username AND password=@password;";
+                    _command = new SQLiteCommand(query, _connection);
+                    _command.Parameters.AddWithValue("@username", username);
+                    _command.Parameters.AddWithValue("@password", hashedPassword);
+
+
+                    reader = _command.ExecuteReader();
+
+                    if (reader.Read())
+                    {
+                        long id = (long)reader["id"];
+                        long role = (long)reader["role"];
+                        return (id, role == 1);
+                    }
+                }
+                return (null, null);
             }
-
-            Close();
-
-            return userId;
-            
+            catch (SQLiteException e)
+            {
+                Console.WriteLine($"Erro ao abrir o banco de dados: {e.Message}\n");
+                return (null, null);
+            }
+            finally
+            {
+                Close();
+            }
         }
 
         internal static User GetUserById(long userId)

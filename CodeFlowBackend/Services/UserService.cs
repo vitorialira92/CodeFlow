@@ -34,9 +34,10 @@ namespace CodeFlowBackend.Services
             return 0;
         }
 
-        public static long Login(string username, string password)
+        public static LoginResponseDTO Login(LoginRequestDTO loginRequest)
         {
-            return UserRepository.Login(username, password);
+            (long? userId, bool? isTechLeader) response = UserRepository.Login(loginRequest.Username, loginRequest.Password);
+            return new LoginResponseDTO(response.userId, response.isTechLeader);
         }
 
         public static UserBasicInfoDTO GetUserBasicInfo(long userId)

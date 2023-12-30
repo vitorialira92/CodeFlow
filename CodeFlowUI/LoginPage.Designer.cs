@@ -1,6 +1,7 @@
 ﻿using CodeFlowBackend.DTO;
 using CodeFlowBackend.Services;
 using CodeFlowUI.Components;
+using CodeFlowUI.Pages;
 using CodeFlowUI.Styles;
 using Microsoft.VisualBasic.ApplicationServices;
 
@@ -91,11 +92,11 @@ namespace CodeFlowUI
 
         private void loginButton_Click(object sender, EventArgs e)
         {
-            long userId = UserService.Login(usernameTextBox.GetText(), passwordTextBox.GetText());
+            LoginResponseDTO response = UserService.Login(new LoginRequestDTO(usernameTextBox.GetText(), passwordTextBox.GetText()));
 
-            if (userId != -1)
+            if (response.UserId != null)
             {
-                HomePage homePage = new HomePage(userId);
+                HomePage homePage = new HomePage(response);
                 homePage.Show();
                 this.Hide();
             }

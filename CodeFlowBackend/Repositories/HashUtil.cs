@@ -9,12 +9,12 @@ namespace CodeFlowBackend.Repositories
 {
     internal static class HashUtil
     {
-        internal static (string, string) GetHashedPassword(string password)
+        internal static (string, string) GetHashedAndSalt(string input)
         {
             byte[] salt;
             new RNGCryptoServiceProvider().GetBytes(salt = new byte[16]);
 
-            var pbkdf2 = new Rfc2898DeriveBytes(password, salt, 2500);
+            var pbkdf2 = new Rfc2898DeriveBytes(input, salt, 2500);
 
             byte[] hash = pbkdf2.GetBytes(30);
             byte[] hashBytes = new byte[hash.Length + salt.Length];
@@ -25,11 +25,11 @@ namespace CodeFlowBackend.Repositories
             return (Convert.ToBase64String(hashBytes), Convert.ToBase64String(salt));
         }
 
-        internal static bool CheckPassword(string enteredPassword, string hashedPassword, string storedSalt)
+        internal static string GetHashedWithGivenSalt(string input, string salt)
         {
-            byte[] saltBytes = Convert.FromBase64String(storedSalt);
+            byte[] saltBytes = Convert.FromBase64String(salt);
 
-            var pbkdf2 = new Rfc2898DeriveBytes(enteredPassword, saltBytes, 2500);
+            var pbkdf2 = new Rfc2898DeriveBytes(input, saltBytes, 2500);
 
             byte[] hash = pbkdf2.GetBytes(30);
             byte[] hashBytes = new byte[hash.Length + saltBytes.Length];
@@ -40,7 +40,7 @@ namespace CodeFlowBackend.Repositories
 
             string computedHash = Convert.ToBase64String(hashBytes);
 
-            return computedHash == hashedPassword;
+            return computedHash;
 
         }
 
