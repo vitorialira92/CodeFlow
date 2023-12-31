@@ -38,10 +38,11 @@ namespace CodeFlowUI.Pages
             this.Name = "EnterProjectPage";
             this.StartPosition = FormStartPosition.CenterScreen;
             this.Text = "CodeFlow";
-            //FormClosed += ProfilePage_FormClosed;
+            FormClosed += EnterProjectPage_FormClosed;
 
             InitScreen();
         }
+
 
         private void InitScreen()
         {

@@ -16,5 +16,9 @@ namespace CodeFlowUI.Pages
         {
             InitializeComponent(userId);
         }
+        private void EnterProjectPage_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            Application.Exit();
+        }
     }
 }
