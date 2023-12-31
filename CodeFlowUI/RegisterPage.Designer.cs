@@ -5,6 +5,7 @@ using System.Text.RegularExpressions;
 using CodeFlowBackend.DTO;
 using System.Text;
 using CodeFlowUI.Pages;
+using CodeFlowUI.Util;
 
 namespace CodeFlowUI
 {
@@ -230,6 +231,7 @@ namespace CodeFlowUI
 
             backToLoginButton.FlatStyle = FlatStyle.Flat;
             backToLoginButton.FlatAppearance.BorderSize = 0;
+            backToLoginButton.Cursor = Cursors.Hand;
 
             backToLoginButton.Click += BackToLoginButton_Click;
 
@@ -238,6 +240,7 @@ namespace CodeFlowUI
             //register button
             RoundedButton registerButton = new RoundedButton("REGISTER", 224, 57, Colors.CallToActionButton, 32);
             registerButton.Location = new Point(528, 731);
+            registerButton.Cursor = Cursors.Hand;
             registerButton.Click += RegisterButton_Click;
 
             this.Controls.Add(registerButton);
@@ -278,22 +281,22 @@ namespace CodeFlowUI
 
             string firstName = firstNameTextBox.TextBox.Text;
 
-            if (firstName.Length < 2 || firstName.Contains(" ") || firstName.Equals("First name"))
+            if (!ValidationUtils.IsInputAValidName(firstName, "First name", false))
                 wrongFields.Add("first name");
 
             string lastName = lastNameTextBox.TextBox.Text;
 
-            if (lastName.Length < 2 || lastName.Equals("Last name"))
+            if (!ValidationUtils.IsInputAValidName(lastName, "Last name", true))
                 wrongFields.Add("last name");
 
             string email = emailTextBox.TextBox.Text;
 
-            if (!email.Contains("@") || !email.Contains(".") || !UserService.IsEmailAvailable(email))
+            if (!ValidationUtils.IsEmailValid(email))
                 wrongFields.Add("e-mail");
 
             string username = usernameTextBox.TextBox.Text;
 
-            if (!UserService.IsUsernameAvailable(username) || username.Length < 3 || username.Equals("Username"))
+            if (!ValidationUtils.IsUsernameValid(username))
             {
                 wrongFields.Add("username");
                 if(!username.Equals("Username"))
@@ -304,7 +307,7 @@ namespace CodeFlowUI
 
             string password = passwordTextBox.TextBox.Text;
 
-            if(password.Length < 8 || password.Contains(" ") || !Regex.IsMatch(password, @"(?=.*[a-zA-Z])(?=.*[0-9])"))
+            if(!ValidationUtils.IsPasswordValid(password))
             {
                 wrongFields.Add("password");
                 this.passwordLabel.ForeColor = Colors.ErrorColor;
