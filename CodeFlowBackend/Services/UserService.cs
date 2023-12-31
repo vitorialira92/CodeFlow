@@ -103,6 +103,11 @@ namespace CodeFlowBackend.Services
             else
                 return UserRepository.UpdateDeveloper(updatedUser.Id, updatedUser.FirstName, updatedUser.LastName, updatedUser.Email, updatedUser.SpecificToUserRole);
         }
+
+        public static void EnterProject(long userId, string projectCode)
+        {
+            UserRepository.EnterProject(userId, projectCode);
+        }
     }
 
 }
