@@ -12,11 +12,10 @@ namespace CodeFlowBackend.Model.User
         public int TechLeaderId { get; private set; }
         public Specializations Specialization { get; private set; }
 
-        public TechLeader(int userId, int techLeaderId, Specializations specialization, 
-            string username, string firstName, string lastName, string email, string password) : base(userId, username, firstName, lastName, 
-                email, password, UserRole.TechLeader)
+        public TechLeader(long userId, Specializations specialization, 
+            string username, string firstName, string lastName, string email, string password, DateTime dateJoined) : base(userId, username, firstName, lastName, 
+                email, password, UserRole.TechLeader, dateJoined)
         {
-            TechLeaderId = techLeaderId;
             Specialization = specialization;
         }
 

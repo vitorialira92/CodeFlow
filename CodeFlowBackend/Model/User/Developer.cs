@@ -15,6 +15,12 @@ namespace CodeFlowBackend.Model.User
             this.ExperienceLevel = experienceLevel;
         }
 
+        public Developer(long id, string username, string firstName, string lastName, string email, string password, DateTime dateJoined, ExperienceLevelDeveloper experienceLevel)
+           : base(id, username, firstName, lastName, email, password, UserRole.Developer, dateJoined)
+        {
+            this.ExperienceLevel = experienceLevel;
+        }
+
         public int DeveloperId { get; private set; }
         public ExperienceLevelDeveloper ExperienceLevel { get; private set; }
 

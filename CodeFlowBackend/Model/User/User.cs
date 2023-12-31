@@ -28,7 +28,7 @@ namespace CodeFlowBackend.Model.User
             this.DateJoined = DateTime.Now;
             this.Role = role;
         }
-        public User(long Id, string username, string firstName, string lastName, string email, string password, UserRole role)
+        public User(long Id, string username, string firstName, string lastName, string email, string password, UserRole role, DateTime dateJoined)
         {
             this.Id = Id;
             this.Username = username;
@@ -36,7 +36,7 @@ namespace CodeFlowBackend.Model.User
             this.LastName = lastName;
             this.Email= email;
             this._password = password;
-            this.DateJoined = DateTime.Now;
+            this.DateJoined = dateJoined;
             this.Role = role;
         }
 
