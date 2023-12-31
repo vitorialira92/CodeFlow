@@ -5,6 +5,7 @@ using CodeFlowBackend.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -40,12 +41,6 @@ namespace CodeFlowBackend.Services
             return new LoginResponseDTO(response.userId, response.isTechLeader);
         }
 
-        public static UserBasicInfoDTO GetUserBasicInfo(long userId)
-        {
-            User user = UserRepository.GetUserById(userId);
-
-            return new UserBasicInfoDTO(user.Id, user.FirstName, user.Role);
-        }
 
         public static bool IsUsernameAvailable(string username)
         {
@@ -72,6 +67,41 @@ namespace CodeFlowBackend.Services
         public static string GetUserFirstNameByID(long userId)
         {
             return UserRepository.GetUserFirstNameById(userId);
+        }
+
+        public static UserDTO GetUserById(long userId)
+        {
+            long userRole = UserRepository.GetUserRoleById(userId);
+
+            switch (userRole)
+            {
+                case 1:
+                    TechLeader techleader = UserRepository.GetTechLeaderById(userId);
+                    return new UserDTO(techleader.Id, techleader.FirstName, techleader.LastName, 
+                        techleader.Email, techleader.Username, techleader.DateJoined, true, (int)techleader.Specialization);
+                case 2:
+                    Developer dev = UserRepository.GetDeveloperById(userId);
+                    return new UserDTO(dev.Id, dev.FirstName, dev.LastName, dev.Email, dev.Username, dev.DateJoined, true, (int)dev.ExperienceLevel);
+                default: return null;
+            }
+        }
+
+        public static int GetUsersProjectCountById(long id)
+        {
+            return UserRepository.GetUsersProjectCountById(id);
+        }
+        
+        public static int GetUsersDoneTasksCountById(long id)
+        {
+            return UserRepository.GetUsersDoneTasksCountById(id);
+        }
+
+        public static bool Update(UserDTO updatedUser)
+        {
+            if (updatedUser.IsTechLeader)
+                return UserRepository.UpdateTechLeader(updatedUser.Id, updatedUser.FirstName, updatedUser.LastName, updatedUser.Email);
+            else
+                return UserRepository.UpdateDeveloper(updatedUser.Id, updatedUser.FirstName, updatedUser.LastName, updatedUser.Email, updatedUser.SpecificToUserRole);
         }
     }
 
