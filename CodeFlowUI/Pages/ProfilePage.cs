@@ -16,5 +16,10 @@ namespace CodeFlowUI.Pages
         {
             InitializeComponent(userId);
         }
+
+        private void ProfilePage_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            Application.Exit();
+        }
     }
 }
