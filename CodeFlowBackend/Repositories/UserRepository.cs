@@ -1,4 +1,6 @@
 ﻿using CodeFlowBackend.DTO;
+using CodeFlowBackend.Exceptions;
+using CodeFlowBackend.Model.Project;
 using CodeFlowBackend.Model.User;
 using CodeFlowBackend.Model.User.Enum;
 using System;
@@ -555,6 +557,105 @@ namespace CodeFlowBackend.Repositories
             }
         }
 
-        
+        internal static void EnterProject(long userId, string projectCode)
+        {
+            long projectId = GetProjectIdByItsCode(projectCode);
+            if (projectId == 0)
+                throw new EnterProjectException("code invalid.");
+
+            if(!IsUserInvitedToProject(userId, projectId))
+                throw new EnterProjectException("user not invited to this project.");
+
+            try
+            {
+                Open();
+
+                string query = "UPDATE project_invite SET entered = 1 WHERE user_id = @userId AND project_id = @projectId";
+                _command = new SQLiteCommand(query, _connection);
+                _command.Parameters.AddWithValue("@userId", userId);
+                _command.Parameters.AddWithValue("@projectId", projectId);
+                _command.ExecuteNonQuery();
+
+                query = "INSERT INTO project_members (project_id, member_id, enter_date) VALUES (@projectId, @userId, CURRENT_TIMESTAMP)";
+                _command = new SQLiteCommand(query, _connection);
+                _command.Parameters.AddWithValue("@userId", userId);
+                _command.Parameters.AddWithValue("@projectId", projectId);
+                _command.ExecuteNonQuery();
+
+
+            }
+            catch (SQLiteException e)
+            {
+                Console.WriteLine($"Error: {e.Message}");
+            }
+            finally
+            {
+                Close();
+            }
+        }
+
+        private static bool IsUserInvitedToProject(long userId, long projectId)
+        {
+
+            try
+            {
+                Open();
+
+                string query = "SELECT COUNT(*) FROM project_invite WHERE user_id = @userId AND project_id = @projectId AND entered = 0";
+
+                _command = new SQLiteCommand(query, _connection);
+                _command.Parameters.AddWithValue("@userId", userId);
+                _command.Parameters.AddWithValue("@projectId", projectId);
+
+                var reader = _command.ExecuteReader();
+
+                long count = 0;
+
+                if (reader.Read())
+                    count = (long)reader[0];
+
+                return count != 0;
+            }
+            catch (SQLiteException e)
+            {
+                Console.WriteLine($"Error: {e.Message}");
+                return false;
+            }
+            finally
+            {
+                Close();
+            }
+        }
+
+        private static long GetProjectIdByItsCode(string projectCode)
+        {
+            long projectId = 0;
+
+            try
+            {
+                Open();
+
+                string query = "SELECT project_id FROM project_entercode WHERE entercode = @enterCode";
+
+                _command = new SQLiteCommand(query, _connection);
+                _command.Parameters.AddWithValue("@enterCode", projectCode);
+
+                var reader = _command.ExecuteReader();
+
+                if (reader.Read())
+                    projectId = (long)reader[0];
+
+                return projectId;
+            }
+            catch (SQLiteException e)
+            {
+                Console.WriteLine($"Error: {e.Message}");
+                return projectId;
+            }
+            finally
+            {
+                Close();
+            }
+        }
     }
 }
