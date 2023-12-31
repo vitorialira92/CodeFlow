@@ -11,10 +11,12 @@ namespace CodeFlowUI.Components
 
     public class RoundedTextBox : UserControl
     {
+        private string hintText;
         public TextBox TextBox { get; private set; }
 
         public RoundedTextBox(string hintText, int width, int height)
         {
+            this.hintText = hintText;
             TextBox = new TextBox
             {
                 BorderStyle = BorderStyle.None,
@@ -28,22 +30,8 @@ namespace CodeFlowUI.Components
                 Font = new Font("Ubuntu", 16)
             };
 
-            TextBox.Enter += new EventHandler((sender, e) =>
-            {
-                TextBox textBox = sender as TextBox;
-                if (textBox.Text == hintText)
-                {
-                    textBox.Text = string.Empty;
-                }
-            });
-            TextBox.Leave += new EventHandler((sender, e) =>
-            {
-                TextBox textBox = sender as TextBox;
-                if (string.IsNullOrEmpty(textBox.Text) || textBox.Text.Equals(hintText))
-                {
-                    textBox.Text = hintText;
-                }
-            });
+            TextBox.Enter += new EventHandler(TextBox_Enter);
+            TextBox.Leave += new EventHandler(TextBox_Leave);
 
             Size = new Size(width, height);
             Padding = new Padding(10);
@@ -53,6 +41,25 @@ namespace CodeFlowUI.Components
         internal string GetText()
         {
             return TextBox.Text;
+        }
+
+        protected void TextBox_Enter(object sender, EventArgs e)
+        {
+
+            TextBox textBox = sender as TextBox;
+            if (textBox.Text == hintText)
+            {
+                textBox.Text = string.Empty;
+            }
+        }
+
+        protected void TextBox_Leave(object sender, EventArgs e)
+        {
+            TextBox textBox = sender as TextBox;
+            if (string.IsNullOrEmpty(textBox.Text) || textBox.Text.Equals(hintText))
+            {
+                textBox.Text = hintText;
+            }
         }
         protected override void OnPaint(PaintEventArgs e)
         {
