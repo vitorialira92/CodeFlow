@@ -657,5 +657,36 @@ namespace CodeFlowBackend.Repositories
                 Close();
             }
         }
+
+        internal static string GetUsersUsernameById(string userId)
+        {
+            string username = "";
+
+            try
+            {
+                Open();
+
+                string query = "SELECT username FROM user WHERE id = @id";
+
+                _command = new SQLiteCommand(query, _connection);
+                _command.Parameters.AddWithValue("@id", userId);
+
+                var reader = _command.ExecuteReader();
+
+                if (reader.Read())
+                    username = reader[0].ToString();
+
+                return username;
+            }
+            catch (SQLiteException e)
+            {
+                Console.WriteLine($"Error: {e.Message}");
+                return username;
+            }
+            finally
+            {
+                Close();
+            }
+        }
     }
 }

@@ -108,6 +108,11 @@ namespace CodeFlowBackend.Services
         {
             UserRepository.EnterProject(userId, projectCode);
         }
+
+        internal static string GetUsersUsernameById(string userId)
+        {
+            return UserRepository.GetUsersUsernameById(userId);
+        }
     }
 
 }
