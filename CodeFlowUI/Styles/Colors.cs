@@ -29,5 +29,10 @@ namespace CodeFlowUI.Styles
         public static readonly Color DoneProject = ColorTranslator.FromHtml("#026C00");
         public static readonly Color ProjectCardBackgroundColor = ColorTranslator.FromHtml("#F6FBFF");
 
+        //tasks status
+        public static readonly Color TodoTask = ColorTranslator.FromHtml("#FAFF00");
+        public static readonly Color InProgressTask = ColorTranslator.FromHtml("#05FF00");
+        public static readonly Color ReviewTask = ColorTranslator.FromHtml("#FF8A00");
+        public static readonly Color DoneTask = ColorTranslator.FromHtml("#026B00");
     }
 }
