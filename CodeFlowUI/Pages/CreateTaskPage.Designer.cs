@@ -319,6 +319,12 @@ namespace CodeFlowUI.Pages
 
         private void AddTag_Click(object sender, EventArgs e)
         {
+            if(allTags.Where(x=> x.Name.ToLower().Equals((this.createTagTextBox.TextBox.Text).ToLower())).FirstOrDefault() != null)
+            {
+                MessageBox.Show("A tag with this name already exists.");
+                return;
+            }
+
             if(!String.IsNullOrWhiteSpace(this.createTagTextBox.TextBox.Text))
             {
                 HideCreateNewTag();
