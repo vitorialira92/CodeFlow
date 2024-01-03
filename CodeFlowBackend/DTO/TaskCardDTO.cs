@@ -1,4 +1,5 @@
-﻿using CodeFlowBackend.Model.Tasks;
+﻿using CodeFlowBackend.Model;
+using CodeFlowBackend.Model.Tasks;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,8 +16,9 @@ namespace CodeFlowBackend.DTO
         public string Assignee { get; private set; }
         public (int done, int total) Checklist { get; private set; }
         public TasksStatus Status { get; private set; } 
+        public Tag Tag { get; private set; }
 
-        public TaskCardDTO(long id, string name, DateTime dueDate, string assignee, (int done, int total) checklist, TasksStatus status)
+        public TaskCardDTO(long id, string name, DateTime dueDate, string assignee, (int done, int total) checklist, TasksStatus status, Tag tag)
         {
             Id = id;
             Name = name;
@@ -24,6 +26,7 @@ namespace CodeFlowBackend.DTO
             Assignee = assignee;
             Checklist = checklist;
             Status = status;
+            Tag = tag;
         }
     }
 }
