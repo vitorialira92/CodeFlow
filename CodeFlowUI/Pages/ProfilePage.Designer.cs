@@ -22,6 +22,7 @@ namespace CodeFlowUI.Pages
         private RoundedTextBox emailTextBox;
         private RoundedTextBox usernameTextBox;
         private ComboBox specificToUserRoleComboBox;
+        private RoundedButton logoutButton;
         private RoundedButton saveButton;
 
         private Label usernameLabel;
@@ -277,6 +278,18 @@ namespace CodeFlowUI.Pages
 
             this.Controls.Add(this.backToHomePageButton);
 
+            logoutButton = new RoundedButton("logout", 150, 35, Colors.CallToActionButton, 32);
+            logoutButton.Location = new Point(1038, 66);
+            logoutButton.Cursor = Cursors.Hand;
+            logoutButton.Font = new Font("Ubuntu", 12);
+            logoutButton.Click += new EventHandler((object sender, EventArgs e) =>
+            {
+                this.Hide();
+                new LoginPage().Show();
+            });
+
+            this.Controls.Add(logoutButton); 
+            
             saveButton = new RoundedButton("SAVE", 224, 57, Colors.CallToActionButton, 40);
             saveButton.Location = new Point(528, 612);
             saveButton.Cursor = Cursors.Hand;
