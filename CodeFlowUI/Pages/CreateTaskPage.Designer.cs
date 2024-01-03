@@ -255,11 +255,19 @@ namespace CodeFlowUI.Pages
 
         private void AddChecklist_Click(object sender, EventArgs e)
         {
-            string newChecklist = this.checklistTextBox.TextBox.Text;
+            if (this.checklist.Contains(this.checklistTextBox.TextBox.Text.ToLower()))
+            {
+                MessageBox.Show($"You already added {this.checklistTextBox.TextBox.Text.ToLower()}");
+                this.checklistTextBox.TextBox.Text = "";
+                return;
+            }
+            string newChecklist = this.checklistTextBox.TextBox.Text.ToLower();
 
             this.checklist.Add(newChecklist);
 
             LoadChecklist();
+
+            this.checklistTextBox.TextBox.Text = "";
         }
         
         private void CleanChecklist()
@@ -331,6 +339,7 @@ namespace CodeFlowUI.Pages
                 ProjectService.CreateNewTag(this.createTagTextBox.TextBox.Text, this.projectPageDTO.ProjectId);
                 LoadTagOptions();
                 this.tagComboBox.SelectedIndex = this.tagComboBox.FindStringExact(this.createTagTextBox.TextBox.Text);
+                this.createTagTextBox.TextBox.Text = "";
             }
         }
 
