@@ -17,5 +17,10 @@ namespace CodeFlowUI.Pages
         {
             InitializeComponent(projectPageDTO);
         }
+        private void CreateTask_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            Application.Exit();
+        }
     }
+    
 }
