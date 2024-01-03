@@ -63,9 +63,9 @@ namespace CodeFlowBackend.Repositories
             }
         }
 
-        public static int GetIdByUsername(string username)
+        public static long GetIdByUsername(string username)
         {
-            int id = 0;
+            long id = 0;
             try
             {
                 Open();
@@ -76,7 +76,7 @@ namespace CodeFlowBackend.Repositories
                 var reader = _command.ExecuteReader();
                 if (reader.Read())
                 {
-                    id = Convert.ToInt32(reader["id"]);
+                    id = (long)(reader["id"]);
                 }
 
                 return id;
@@ -98,7 +98,7 @@ namespace CodeFlowBackend.Repositories
             {
                 if (AddUser(user))
                 {
-                    int id = GetIdByUsername(user.Username);
+                    long id = GetIdByUsername(user.Username);
 
                     Open();
                     string query = "INSERT INTO developer (user_id, experience_level)" +
@@ -137,7 +137,7 @@ namespace CodeFlowBackend.Repositories
 
                 if (AddUser(user))
                 {
-                    int id = GetIdByUsername(user.Username);
+                    long id = GetIdByUsername(user.Username);
 
                     Open();
                     string query = "INSERT INTO techleader (user_id, specialization)" +
@@ -658,7 +658,7 @@ namespace CodeFlowBackend.Repositories
             }
         }
 
-        internal static string GetUsersUsernameById(string userId)
+        internal static string GetUsersUsernameById(long userId)
         {
             string username = "";
 
