@@ -80,7 +80,7 @@ namespace CodeFlowUI.Pages
 
             foreach(var task in taskCardsDTO)
             {
-                TaskCard taskCard = new TaskCard(task.Name, task.DueDate, task.Checklist, task.Assignee, task.Status);
+                TaskCard taskCard = new TaskCard(task.Name, task.DueDate, task.Checklist, task.Assignee, task.Status, task.Tag);
 
                 int y;
                 
