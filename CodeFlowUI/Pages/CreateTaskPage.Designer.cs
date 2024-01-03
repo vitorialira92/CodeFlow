@@ -168,6 +168,7 @@ namespace CodeFlowUI.Pages
             nameTextBox = new RoundedTextBox("", 572, 60);
             nameTextBox.Location = new Point(180, 171);
             nameTextBox.TextBox.Font = new Font("Ubuntu", 10);
+            nameTextBox.TextBox.MaxLength = 30;
             this.Controls.Add(nameTextBox);
 
             dueDatePicker = new DateTimePicker();
@@ -179,6 +180,7 @@ namespace CodeFlowUI.Pages
             descriptionTextBox = new RoundedTextBox("", 821, 60);
             descriptionTextBox.Location = new Point(180, 276);
             descriptionTextBox.TextBox.Font = new Font("Ubuntu", 10);
+            descriptionTextBox.TextBox.MaxLength = 150;
             this.Controls.Add(descriptionTextBox);
 
             assigneeTextBox = new RoundedTextBoxEditable(UserService.GetUsersUsernameById(this.projectPageDTO.UserId), 442, 60);

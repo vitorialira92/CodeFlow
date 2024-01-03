@@ -44,6 +44,61 @@ namespace CodeFlowBackend.Repositories
             }
         }
 
+        internal static bool CreateProject(long techLeaderId, string name, string description, DateTime dueDate)
+        {
+            try
+            {
+                Open();
+
+                string query = @"insert into project (techleader_id, name, description, due_date, status) 
+                        values (@techleaderId, @name, @description, @due_date, 1);
+                ";
+                _command = new SQLiteCommand(query, _connection);
+                _command.Parameters.AddWithValue("@techleaderId", techLeaderId);
+                _command.Parameters.AddWithValue("@name", name);
+                _command.Parameters.AddWithValue("@description", description);
+                _command.Parameters.AddWithValue("@due_date", dueDate);
+                
+                bool createProject = _command.ExecuteNonQuery() > 0;
+                bool addProjectMember = false;
+
+                query = @"SELECT id from project where name = @name and techleader_id = @techleaderId;";
+
+                _command = new SQLiteCommand(query, _connection);
+                _command.Parameters.AddWithValue("@techleaderId", techLeaderId);
+                _command.Parameters.AddWithValue("@name", name);
+
+                var reader = _command.ExecuteReader();
+
+                if (reader.Read())
+                {
+                    long projectId = (long)reader[0];
+
+                    query = @"insert into project_members (project_id, member_id, enter_date) 
+                            values (@project_id, @member_id, @enter_date);";
+
+                    _command = new SQLiteCommand(query, _connection);
+                    _command.Parameters.AddWithValue("@project_id", projectId);
+                    _command.Parameters.AddWithValue("@member_id", techLeaderId);
+                    _command.Parameters.AddWithValue("@enter_date", DateTime.Now);
+
+                    addProjectMember = _command.ExecuteNonQuery() > 0;
+                }
+
+                return createProject && addProjectMember;
+
+            }
+            catch (SQLiteException e)
+            {
+                Console.WriteLine(e.Message);
+                return false;
+            }
+            finally
+            {
+                Close();
+            }
+        }
+
         internal static bool CreateTask(long projectId, string name, string description, long? tagId, List<string> checklist, long assingeedId, DateTime dueDate)
         {
             try
@@ -306,6 +361,32 @@ namespace CodeFlowBackend.Repositories
             {
                 Console.WriteLine("An error occured: " + ex.Message);
                 return status;
+
+            }
+            finally { Close(); }
+        }
+
+        internal static bool IsProjectNameAvailableForThisUser(string name, long techleaderId)
+        {
+            try
+            {
+                Open();
+
+                string query = "SELECT count(*) FROM project WHERE name = @name and techleader_id = @techleaderId;";
+
+                _command = new SQLiteCommand(query, _connection);
+
+                _command.Parameters.AddWithValue("@name", name);
+                _command.Parameters.AddWithValue("@techleaderId", techleaderId);
+
+                int count = Convert.ToInt32(_command.ExecuteScalar());
+                return count == 0;
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("An error occured: " + ex.Message);
+                return false;
 
             }
             finally { Close(); }

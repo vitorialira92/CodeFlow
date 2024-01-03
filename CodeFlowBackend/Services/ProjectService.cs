@@ -30,6 +30,16 @@ namespace CodeFlowBackend.Services
             ProjectRepository.CreateNewTag(name, hexColor, projectId);
         }
 
+        public static bool IsProjectNameAvailableForThisUser(string name, long techleaderId)
+        {
+            return ProjectRepository.IsProjectNameAvailableForThisUser(name, techleaderId);
+        }
+
+        public static bool CreateProject(CreateProjectDTO createProjectDTO)
+        {
+            return ProjectRepository.CreateProject(createProjectDTO.TechLeaderId, createProjectDTO.Name, createProjectDTO.Description, createProjectDTO.DueDate);
+        }
+
         public static bool CreateTask(CreateTaskDTO createTaskDTO)
         {
             return ProjectRepository.CreateTask(createTaskDTO.ProjectId, createTaskDTO.Name, createTaskDTO.Description,
