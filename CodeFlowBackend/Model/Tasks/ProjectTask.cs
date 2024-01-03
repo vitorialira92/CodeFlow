@@ -14,8 +14,9 @@ namespace CodeFlowBackend.Model.Tasks
         public DateTime DueDate { get; private set; }
         public string Assignee {  get; private set; }
         public TasksStatus Status { get; private set; }
+        public Tag tag { get; private set; }
 
-        public ProjectTask(long id, string name, string description, DateTime dueDate, string assignee, TasksStatus status)
+        public ProjectTask(long id, string name, string description, DateTime dueDate, string assignee, TasksStatus status, Tag tag)
         {
             Id = id;
             Name = name;
@@ -23,6 +24,7 @@ namespace CodeFlowBackend.Model.Tasks
             DueDate = dueDate;
             Assignee = assignee;
             Status = status;
+            this.tag = tag;
         }
     }
 }
