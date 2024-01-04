@@ -54,6 +54,49 @@ namespace CodeFlowUI.Components
             Controls.Add(TextBox);
         }
 
+        public PasswordTextBox(string hintText, int width, int height)
+        {
+            
+            TextBox = new TextBox
+            {
+                BorderStyle = BorderStyle.None,
+                Location = new Point(16, 16),
+                Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right,
+                Width = width - 32,
+                Height = height,
+                BackColor = Colors.TextBox,
+                ForeColor = Colors.CallToActionText,
+                Text = hintText,
+                Font = new Font("Ubuntu", 16)
+            };
+
+            TextBox.Enter += new EventHandler((sender, e) =>
+            {
+                TextBox textBox = sender as TextBox;
+                if (textBox.Text == hintText)
+                {
+                    textBox.PasswordChar = '*';
+                    textBox.Text = string.Empty;
+                    textBox.UseSystemPasswordChar = true;
+                }
+            });
+            TextBox.Leave += new EventHandler((sender, e) =>
+            {
+                TextBox textBox = sender as TextBox;
+                if (string.IsNullOrEmpty(textBox.Text) || textBox.Text.Equals(hintText))
+                {
+                    textBox.Text = hintText;
+                    textBox.PasswordChar = '\0';
+                    textBox.UseSystemPasswordChar = false;
+                }
+            });
+
+            Size = new Size(width, height);
+            Padding = new Padding(10);
+            BackColor = Color.White;
+            Controls.Add(TextBox);
+        }
+
         internal string GetText()
         {
             return TextBox.Text;

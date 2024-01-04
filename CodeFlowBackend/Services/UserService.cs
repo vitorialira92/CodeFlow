@@ -118,6 +118,16 @@ namespace CodeFlowBackend.Services
         {
             return UserRepository.GetIdByUsername(username);
         }
+
+        public static bool IsUserTechLeader(long userId)
+        {
+            return UserRepository.GetUserRoleById(userId) == 1;
+        }
+
+        public static bool ChangePassword(long userId, string currentPassword, string newPassword)
+        {
+            return UserRepository.ChangePassword(userId, currentPassword, newPassword);
+        }
     }
 
 }

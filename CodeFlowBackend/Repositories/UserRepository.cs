@@ -688,5 +688,72 @@ namespace CodeFlowBackend.Repositories
                 Close();
             }
         }
+
+        internal static bool ChangePassword(long userId, string currentPassword, string newPassword)
+        {
+            try
+            {
+                Open();
+
+                string query = @"SELECT s.salt FROM user_salt s INNER JOIN user u ON u.id = s.user_id where u.id=@id;";
+                _command = new SQLiteCommand(query, _connection);
+                _command.Parameters.AddWithValue("@id", userId);
+
+                var reader = _command.ExecuteReader();
+
+                if (reader.Read())
+                {
+                    string salt = reader["salt"].ToString();
+                    string hashedPassword = HashUtil.GetHashedWithGivenSalt(currentPassword, salt);
+                    if (hashedPassword == "")
+                        return false;
+
+                    query = @"SELECT count(*)
+                     FROM user 
+                     WHERE id=@id AND password=@password;";
+                    _command = new SQLiteCommand(query, _connection);
+                    _command.Parameters.AddWithValue("@id", userId);
+                    _command.Parameters.AddWithValue("@password", hashedPassword);
+
+
+                    reader = _command.ExecuteReader();
+
+                    if(reader.Read())
+                        if ((long)reader[0] != 0)
+                        {
+                            (string password, string salt) newPasswordAndSalt = HashUtil.GetHashedAndSalt(newPassword);
+
+                            query = @"UPDATE user SET password = @newPassword WHERE id = @id;";
+
+                            _command = new SQLiteCommand(query, _connection);
+
+                            _command.Parameters.AddWithValue("@newPassword", newPasswordAndSalt.password);
+                            _command.Parameters.AddWithValue("@id", userId);
+
+                            _command.ExecuteNonQuery();
+
+                            query = @"UPDATE user_salt SET salt = @salt WHERE user_id = @id;";
+
+                            _command = new SQLiteCommand(query, _connection);
+
+                            _command.Parameters.AddWithValue("@salt", newPasswordAndSalt.salt);
+                            _command.Parameters.AddWithValue("@id", userId);
+
+                            _command.ExecuteNonQuery(); 
+                            return true;
+                        }
+                }
+                return false;
+            }
+            catch (SQLiteException e)
+            {
+                Console.WriteLine($"Erro ao abrir o banco de dados: {e.Message}\n");
+                return false;
+            }
+            finally
+            {
+                Close();
+            }
+        }
     }
 }
