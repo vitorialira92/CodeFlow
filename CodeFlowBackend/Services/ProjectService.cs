@@ -99,7 +99,25 @@ namespace CodeFlowBackend.Services
 
         internal static long GetProjectIdByItsCode(string projectCode)
         {
-            return ProjectRepository.GetProjectIdByItsCode();
+            return ProjectRepository.GetProjectIdByItsCode(projectCode);
+        }
+
+        public static string GetProjectEnterCodeById(long projectId)
+        {
+            return ProjectRepository.GetProjectEnterCodeById(projectId);
+        }
+
+        public static bool InviteToProject(long projectId, string username)
+        {
+            long userId = UserService.GetUserIdByUsername(username);
+
+            if (userId == 0)
+                return false;
+
+            if (UserService.IsUserTechLeader(userId))
+                return false;
+
+            return ProjectRepository.InviteToProject(projectId, userId);
         }
     }
 }

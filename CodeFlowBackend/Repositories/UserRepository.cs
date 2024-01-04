@@ -43,15 +43,33 @@ namespace CodeFlowBackend.Repositories
                 _command.Parameters.AddWithValue("@role", (int)user.Role);
                 _command.Parameters.AddWithValue("@password", password_salt.password);
 
-                query = "INSERT INTO user_salt (user_id, salt) VALUES (@user_id, @salt);";
-
-                _command = new SQLiteCommand(query, _connection);
-                _command.Parameters.AddWithValue("@user_id", GetIdByUsername(user.Username));
-                _command.Parameters.AddWithValue("@salt", password_salt.salt);
-
                 _command.ExecuteNonQuery();
 
-                return _command.ExecuteNonQuery() > 0;
+                long id;
+
+                query = "SELECT id FROM user WHERE username = @username;";
+                _command = new SQLiteCommand(query, _connection);
+
+                _command.Parameters.AddWithValue("@username", user.Username);
+
+                var reader = _command.ExecuteReader();
+
+                if (reader.Read())
+                {
+                    id = (long)(reader["id"]);
+
+                    query = "INSERT INTO user_salt (user_id, salt) VALUES (@user_id, @salt);";
+
+                    _command = new SQLiteCommand(query, _connection);
+                    _command.Parameters.AddWithValue("@user_id", id);
+                    _command.Parameters.AddWithValue("@salt", password_salt.salt);
+
+                    _command.ExecuteNonQuery();
+
+                    return true;
+                }
+                return false;
+                
             }
             catch (Exception ex)
             {
@@ -74,7 +92,9 @@ namespace CodeFlowBackend.Repositories
                 _command = new SQLiteCommand(query, _connection);
 
                 _command.Parameters.AddWithValue("@username", username);
+
                 var reader = _command.ExecuteReader();
+
                 if (reader.Read())
                 {
                     id = (long)(reader["id"]);

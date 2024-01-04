@@ -81,7 +81,7 @@ namespace CodeFlowBackend.Services
                         techleader.Email, techleader.Username, techleader.DateJoined, true, (int)techleader.Specialization);
                 case 2:
                     Developer dev = UserRepository.GetDeveloperById(userId);
-                    return new UserDTO(dev.Id, dev.FirstName, dev.LastName, dev.Email, dev.Username, dev.DateJoined, true, (int)dev.ExperienceLevel);
+                    return new UserDTO(dev.Id, dev.FirstName, dev.LastName, dev.Email, dev.Username, dev.DateJoined, false, (int)dev.ExperienceLevel);
                 default: return null;
             }
         }

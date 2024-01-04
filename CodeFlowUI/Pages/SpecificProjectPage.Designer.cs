@@ -286,7 +286,7 @@ namespace CodeFlowUI.Pages
                 this.addDevelopersButton.Click += new EventHandler((object sender, EventArgs e) =>
                 {
                     this.Hide();
-                    new InviteToProjectPage(this.projectPageDTO.ProjectId).Show();
+                    new InviteToProjectPage(this.projectPageDTO.ProjectId, this.projectPageDTO.UserId).Show();
                 });
 
                 this.Controls.Add(addDevelopersButton);

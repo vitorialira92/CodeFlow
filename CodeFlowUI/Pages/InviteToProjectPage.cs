@@ -12,9 +12,14 @@ namespace CodeFlowUI.Pages
 {
     public partial class InviteToProjectPage : Form
     {
-        public InviteToProjectPage(long projectId)
+        public InviteToProjectPage(long projectId, long userId)
         {
-            InitializeComponent(projectId);
+            InitializeComponent(projectId, userId);
+        }
+
+        private void InviteToProject_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            Application.Exit();
         }
     }
 }

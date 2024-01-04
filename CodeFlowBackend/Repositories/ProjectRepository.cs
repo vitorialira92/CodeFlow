@@ -11,6 +11,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 using static System.Net.Mime.MediaTypeNames;
 
 namespace CodeFlowBackend.Repositories
@@ -86,6 +87,8 @@ namespace CodeFlowBackend.Repositories
                     addProjectMember = _command.ExecuteNonQuery() > 0;
 
                     string enterCode = GerenateProjectEnterCode();
+
+                    Open();
 
                     query = @"insert into project_entercode (project_id, entercode) values (@projectId, @entercode);";
 
@@ -456,7 +459,7 @@ namespace CodeFlowBackend.Repositories
             finally { Close(); }
         }
 
-        private static long GetProjectIdByItsCode(string projectCode)
+        internal static long GetProjectIdByItsCode(string projectCode)
         {
             long projectId = 0;
 
@@ -487,5 +490,61 @@ namespace CodeFlowBackend.Repositories
             }
         }
 
+        internal static string GetProjectEnterCodeById(long projectId)
+        {
+            string enterCode = "";
+
+            try
+            {
+                Open();
+
+                string query = "SELECT entercode FROM project_entercode WHERE project_id = @projectId";
+
+                _command = new SQLiteCommand(query, _connection);
+                _command.Parameters.AddWithValue("@projectId", projectId);
+
+                var reader = _command.ExecuteReader();
+
+                if (reader.Read())
+                    enterCode = reader[0].ToString();
+
+                return enterCode;
+            }
+            catch (SQLiteException e)
+            {
+                Console.WriteLine($"Error: {e.Message}");
+                return enterCode;
+            }
+            finally
+            {
+                Close();
+            }
+        }
+
+        internal static bool InviteToProject(long projectId, long userId)
+        {
+            try
+            {
+                Open();
+
+                string query = @"insert into project_invite (user_id, project_id, entered) values (@userId, @projectId, 0);
+                ";
+                _command = new SQLiteCommand(query, _connection);
+                _command.Parameters.AddWithValue("@userId", userId);
+                _command.Parameters.AddWithValue("@projectId", projectId);
+
+                return _command.ExecuteNonQuery() > 0;
+
+            }
+            catch (SQLiteException e)
+            {
+                Console.WriteLine(e.Message);
+                return false;
+            }
+            finally
+            {
+                Close();
+            }
+        }
     }
 }
