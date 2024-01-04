@@ -11,6 +11,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace CodeFlowBackend.Repositories
 {
@@ -60,7 +61,7 @@ namespace CodeFlowBackend.Repositories
                 _command.Parameters.AddWithValue("@due_date", dueDate);
                 
                 bool createProject = _command.ExecuteNonQuery() > 0;
-                bool addProjectMember = false;
+                bool addProjectMember = false, createEnterCode = false;
 
                 query = @"SELECT id from project where name = @name and techleader_id = @techleaderId;";
 
@@ -83,9 +84,20 @@ namespace CodeFlowBackend.Repositories
                     _command.Parameters.AddWithValue("@enter_date", DateTime.Now);
 
                     addProjectMember = _command.ExecuteNonQuery() > 0;
+
+                    string enterCode = GerenateProjectEnterCode();
+
+                    query = @"insert into project_entercode (project_id, entercode) values (@projectId, @entercode);";
+
+                    _command = new SQLiteCommand(query, _connection);
+                    _command.Parameters.AddWithValue("@projectId", projectId);
+                    _command.Parameters.AddWithValue("@entercode", enterCode);
+
+                    createEnterCode = _command.ExecuteNonQuery() > 0;
                 }
 
-                return createProject && addProjectMember;
+
+                return createProject && addProjectMember && createEnterCode;
 
             }
             catch (SQLiteException e)
@@ -97,6 +109,25 @@ namespace CodeFlowBackend.Repositories
             {
                 Close();
             }
+        }
+
+        private static string GerenateProjectEnterCode()
+        {
+            Random random = new Random();
+
+            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            StringBuilder builder = new StringBuilder();
+
+            for (int i = 0; i < 6; i++)
+            {
+                builder.Append(chars[random.Next(chars.Length)]);
+            }
+
+            if (GetProjectIdByItsCode(builder.ToString()) != 0)
+                return GerenateProjectEnterCode();
+
+            return builder.ToString();
+        
         }
 
         internal static bool CreateTask(long projectId, string name, string description, long? tagId, List<string> checklist, long assingeedId, DateTime dueDate)
@@ -424,5 +455,37 @@ namespace CodeFlowBackend.Repositories
             }
             finally { Close(); }
         }
+
+        private static long GetProjectIdByItsCode(string projectCode)
+        {
+            long projectId = 0;
+
+            try
+            {
+                Open();
+
+                string query = "SELECT project_id FROM project_entercode WHERE entercode = @enterCode";
+
+                _command = new SQLiteCommand(query, _connection);
+                _command.Parameters.AddWithValue("@enterCode", projectCode);
+
+                var reader = _command.ExecuteReader();
+
+                if (reader.Read())
+                    projectId = (long)reader[0];
+
+                return projectId;
+            }
+            catch (SQLiteException e)
+            {
+                Console.WriteLine($"Error: {e.Message}");
+                return projectId;
+            }
+            finally
+            {
+                Close();
+            }
+        }
+
     }
 }

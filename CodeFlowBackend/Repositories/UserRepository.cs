@@ -3,6 +3,7 @@ using CodeFlowBackend.Exceptions;
 using CodeFlowBackend.Model.Project;
 using CodeFlowBackend.Model.User;
 using CodeFlowBackend.Model.User.Enum;
+using CodeFlowBackend.Services;
 using System;
 using System.Collections.Generic;
 using System.Data.SQLite;
@@ -559,7 +560,7 @@ namespace CodeFlowBackend.Repositories
 
         internal static void EnterProject(long userId, string projectCode)
         {
-            long projectId = GetProjectIdByItsCode(projectCode);
+            long projectId = ProjectService.GetProjectIdByItsCode(projectCode);
             if (projectId == 0)
                 throw new EnterProjectException("code invalid.");
 
@@ -627,37 +628,7 @@ namespace CodeFlowBackend.Repositories
             }
         }
 
-        private static long GetProjectIdByItsCode(string projectCode)
-        {
-            long projectId = 0;
-
-            try
-            {
-                Open();
-
-                string query = "SELECT project_id FROM project_entercode WHERE entercode = @enterCode";
-
-                _command = new SQLiteCommand(query, _connection);
-                _command.Parameters.AddWithValue("@enterCode", projectCode);
-
-                var reader = _command.ExecuteReader();
-
-                if (reader.Read())
-                    projectId = (long)reader[0];
-
-                return projectId;
-            }
-            catch (SQLiteException e)
-            {
-                Console.WriteLine($"Error: {e.Message}");
-                return projectId;
-            }
-            finally
-            {
-                Close();
-            }
-        }
-
+        
         internal static string GetUsersUsernameById(long userId)
         {
             string username = "";

@@ -96,5 +96,10 @@ namespace CodeFlowBackend.Services
         {
             return ProjectRepository.IsUserOnProject(username, projectId);
         }
+
+        internal static long GetProjectIdByItsCode(string projectCode)
+        {
+            return ProjectRepository.GetProjectIdByItsCode();
+        }
     }
 }
