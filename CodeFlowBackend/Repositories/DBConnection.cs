@@ -123,7 +123,7 @@ namespace CodeFlowBackend.Repositories
                 description TEXT NOT NULL CHECK(length(description) <= 150),
                 due_date DATETIME,
                 assignee INTEGER,
-                status INTEGER NOT NULL CHECK(status IN (1, 2, 3, 4, 5)),
+                status INTEGER NOT NULL CHECK(status IN (1, 2, 3, 4)),
                 tag_id INTEGER,
                 FOREIGN KEY (project_id) REFERENCES project(id),
                 FOREIGN KEY (assignee) REFERENCES user(id),

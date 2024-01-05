@@ -10,13 +10,15 @@ namespace CodeFlowBackend.DTO
     {
         public long UserId { get; private set; }
         public long TaskId { get; private set; }
+        public long ProjectId { get; private set; }
         public bool isUserTechLeader { get; private set; }
 
-        public OpenTaskPageDTO(long userId, long taskId, bool isUserTechLeader)
+        public OpenTaskPageDTO(long userId, long taskId, long projectId, bool isUserTechLeader)
         {
             UserId = userId;
             TaskId = taskId;
             this.isUserTechLeader = isUserTechLeader;
+            ProjectId = projectId;
         }
     }
 }

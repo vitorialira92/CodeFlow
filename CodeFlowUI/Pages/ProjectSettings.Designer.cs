@@ -267,7 +267,7 @@ namespace CodeFlowUI.Pages
             if (ProjectService.UpdateProjectDueDate(projectId, dueDate))
             {
                 if (dueDate < DateTime.Today)
-                    ProjectService.UpdateStatus(projectId, ProjectStatus.Late);
+                    ProjectService.UpdateProjectStatus(projectId, ProjectStatus.Late);
                 return true;
             }
                 

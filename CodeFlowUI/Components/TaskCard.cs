@@ -16,6 +16,7 @@ namespace CodeFlowUI.Components
     {
         public TaskCard(string taskName, DateTime dueDate,(int done, int total) checklist, string assignee, TasksStatus status, Tag? tag)
         {
+            this.Cursor = Cursors.Hand;
             Width = 260;
             Height = 112;
             BorderStyle = BorderStyle.None;
@@ -66,7 +67,7 @@ namespace CodeFlowUI.Components
             Controls.Add(checklistPicture);
 
             Label statsLabel = new Label();
-            statsLabel.Text = $"{checklist.done}/{checklist.done}";
+            statsLabel.Text = $"{checklist.done}/{checklist.total}";
             statsLabel.ForeColor = Colors.DarkBlue;
             statsLabel.AutoSize = true;
             statsLabel.Location = new Point(53,61);

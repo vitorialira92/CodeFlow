@@ -36,7 +36,7 @@ namespace CodeFlowBackend.Repositories
                 _command.Parameters.AddWithValue("@color", hexColor);
 
                 _command.ExecuteNonQuery();
-                
+
             }
             catch (SQLiteException e)
             {
@@ -62,7 +62,7 @@ namespace CodeFlowBackend.Repositories
                 _command.Parameters.AddWithValue("@name", name);
                 _command.Parameters.AddWithValue("@description", description);
                 _command.Parameters.AddWithValue("@due_date", dueDate);
-                
+
                 bool createProject = _command.ExecuteNonQuery() > 0;
                 bool addProjectMember = false, createEnterCode = false;
 
@@ -132,7 +132,7 @@ namespace CodeFlowBackend.Repositories
                 return GerenateProjectEnterCode();
 
             return builder.ToString();
-        
+
         }
 
         internal static bool CreateTask(long projectId, string name, string description, long? tagId, List<string> checklist, long assingeedId, DateTime dueDate)
@@ -151,7 +151,7 @@ namespace CodeFlowBackend.Repositories
                 _command.Parameters.AddWithValue("@due_date", dueDate);
                 _command.Parameters.AddWithValue("@assignee", assingeedId);
                 _command.Parameters.AddWithValue("@tag_id", tagId);
-                
+
                 int createTask = _command.ExecuteNonQuery();
                 bool addChecklist;
 
@@ -187,14 +187,14 @@ namespace CodeFlowBackend.Repositories
                 else
                     addChecklist = true;
 
-                
+
                 return createTask > 0 && addChecklist;
 
             }
             catch (SQLiteException e)
             {
                 Console.WriteLine(e.Message);
-                return false; 
+                return false;
             }
             finally
             {
@@ -241,7 +241,7 @@ namespace CodeFlowBackend.Repositories
             {
                 Close();
             }
-            
+
         }
 
         internal static List<Tag> GetAllTagsByProjectId(long projectId)
@@ -261,7 +261,7 @@ namespace CodeFlowBackend.Repositories
                     long id = (long)reader["id"];
                     string name = reader["name"].ToString();
                     string color = reader["color"].ToString();
-                   
+
                     Tag tag = new Tag(id, name, ColorTranslator.FromHtml(color));
                     tags.Add(tag);
                 }
@@ -288,7 +288,7 @@ namespace CodeFlowBackend.Repositories
                 Open();
                 string query = @"select a.id, a.name, a.description, a.due_date, 
                         a.assignee, a.status, t.id as tagid, t.name as tagname, t.color from assignment a 
-                        left join tag t on a.project_id = t.project_id where a.project_id = @id;";
+                        left join tag t on a.project_id = t.project_id where a.project_id = @id and a.tag_id = t.id;";
                 _command = new SQLiteCommand(query, _connection);
                 _command.Parameters.AddWithValue("@id", projectId);
 
@@ -333,7 +333,7 @@ namespace CodeFlowBackend.Repositories
                 var reader = _command.ExecuteReader();
                 if (reader.Read())
                 {
-                    checklist.total =(int) (long) reader[0];
+                    checklist.total = (int)(long)reader[0];
                     checklist.done = (int)(long)reader[1];
                 }
 
@@ -388,7 +388,7 @@ namespace CodeFlowBackend.Repositories
                 var reader = _command.ExecuteReader();
                 if (reader.Read())
                 {
-                    status =(long) reader[0];
+                    status = (long)reader[0];
                 }
 
                 return status;
@@ -577,14 +577,14 @@ namespace CodeFlowBackend.Repositories
                     _command.Parameters.AddWithValue("@id", projectId);
 
                     reader = _command.ExecuteReader();
-                    while(reader.Read())
+                    while (reader.Read())
                     {
                         membersId.Add((long)reader["member_id"]);
                     }
 
                     response = new ProjectOverviewDTO(projectId, name, description, dueDate, membersId);
                 }
-                    
+
 
                 return response;
             }
@@ -660,7 +660,7 @@ namespace CodeFlowBackend.Repositories
             }
         }
 
-        internal static bool UpdateStatus(long projectId, int status)
+        internal static bool UpdateProjectStatus(long projectId, int status)
         {
             try
             {
@@ -747,7 +747,7 @@ namespace CodeFlowBackend.Repositories
                 Open();
                 string query = @"select a.id, a.name, a.description, a.due_date, 
                         a.assignee, a.status, t.id as tagid, t.name as tagname, t.color from assignment a 
-                        left join tag t on a.project_id = t.project_id where a.project_id = @id and a.assignee = @userId;";
+                        left join tag t on a.project_id = t.project_id where a.project_id = @id and a.assignee = @userId and a.tag_id = t.id;";
                 _command = new SQLiteCommand(query, _connection);
                 _command.Parameters.AddWithValue("@id", projectId);
                 _command.Parameters.AddWithValue("@userId", userId);
@@ -787,7 +787,7 @@ namespace CodeFlowBackend.Repositories
                 Open();
                 string query = @"select a.id, a.name, a.description, a.due_date, 
                         a.assignee, a.status, t.id as tagid, t.name as tagname, t.color from assignment a 
-                        left join tag t on a.project_id = t.project_id where a.project_id = @id and t.id = @tagId;";
+                        left join tag t on a.project_id = t.project_id where a.project_id = @id and t.id = @tagId and a.tag_id = t.id;";
                 _command = new SQLiteCommand(query, _connection);
                 _command.Parameters.AddWithValue("@id", projectId);
                 _command.Parameters.AddWithValue("@tagId", tagId);
@@ -816,6 +816,249 @@ namespace CodeFlowBackend.Repositories
             {
                 Close();
             }
+        }
+
+        internal static ProjectTask GetTaskById(long taskId)
+        {
+            ProjectTask task = null;
+            try
+            {
+                Open();
+                string query = @"select a.id, a.name, a.description, a.due_date, 
+                        a.assignee, a.status, t.id as tagid, t.name as tagname, t.color from assignment a 
+                        left join tag t on a.tag_id = t.id where a.id = @id;";
+                _command = new SQLiteCommand(query, _connection);
+                _command.Parameters.AddWithValue("@id", taskId);
+
+                var reader = _command.ExecuteReader();
+                if (reader.Read())
+                {
+                    long id = (long)reader["id"];
+                    string name = reader["name"].ToString();
+                    string description = reader["description"].ToString();
+                    string assignee = UserService.GetUsersUsernameById((long)reader["assignee"]);
+                    DateTime dueDate = DateTime.Parse(reader["due_date"].ToString());
+                    TasksStatus status = (TasksStatus)(long)reader["status"];
+                    Tag tag = new Tag((long)reader["tagid"], reader["tagname"].ToString(), ColorTranslator.FromHtml(reader["color"].ToString()));
+
+                    Open();
+                    query = @"select id, name, isDone from checklist where assignment_id = @taskId;";
+                    _command = new SQLiteCommand(query, _connection);
+                    _command.Parameters.AddWithValue("@taskId", taskId);
+
+                    List<ChecklistItem> checklist = new List<ChecklistItem>();
+
+                    reader = _command.ExecuteReader();
+
+                    while (reader.Read())
+                    {
+                        long c_id = (long)reader["id"];
+                        string c_name = reader["name"].ToString();
+                        bool isDone = reader["isDone"].ToString().Equals("1");
+                        checklist.Add(new ChecklistItem(c_id, c_name, isDone));
+                    }
+
+                    task = new ProjectTask(id, name, description, dueDate, assignee, status, tag, checklist);
+                }
+
+                return task;
+            }
+            catch (SQLiteException e)
+            {
+                Console.WriteLine(e.Message);
+                return task;
+            }
+            finally
+            {
+                Close();
+            }
+        }
+
+        internal static bool UpdateTaskDescription(long id, string description)
+        {
+            try
+            {
+                Open();
+
+                string query = @"UPDATE assignment SET description = @description WHERE id = @id;
+                ";
+                _command = new SQLiteCommand(query, _connection);
+                _command.Parameters.AddWithValue("@id", id);
+                _command.Parameters.AddWithValue("@description", description);
+
+                return _command.ExecuteNonQuery() > 0;
+
+            }
+            catch (SQLiteException e)
+            {
+                Console.WriteLine(e.Message);
+                return false;
+            }
+            finally
+            {
+                Close();
+            }
+        }
+
+        internal static bool UpdateTaskAssignee(long id, long assignee)
+        {
+            try
+            {
+                Open();
+
+                string query = @"UPDATE assignment SET assignee = @assignee WHERE id = @id;
+                ";
+                _command = new SQLiteCommand(query, _connection);
+                _command.Parameters.AddWithValue("@id", id);
+                _command.Parameters.AddWithValue("@assignee", assignee);
+
+                return _command.ExecuteNonQuery() > 0;
+
+            }
+            catch (SQLiteException e)
+            {
+                Console.WriteLine(e.Message);
+                return false;
+            }
+            finally
+            {
+                Close();
+            }
+        }
+
+        internal static bool UpdateTaskDueDate(long id, DateTime dueDate)
+        {
+            try
+            {
+                Open();
+
+                string query = @"UPDATE assignment SET due_date = @dueDate WHERE id = @id;
+                ";
+                _command = new SQLiteCommand(query, _connection);
+                _command.Parameters.AddWithValue("@id", id);
+                _command.Parameters.AddWithValue("@dueDate", dueDate);
+
+                return _command.ExecuteNonQuery() > 0;
+
+            }
+            catch (SQLiteException e)
+            {
+                Console.WriteLine(e.Message);
+                return false;
+            }
+            finally
+            {
+                Close();
+            }
+        }
+
+        internal static bool UpdateTaskTag(long id, Tag tag)
+        {
+            try
+            {
+                Open();
+
+                string query = @"UPDATE assignment SET tag_id = @tagId WHERE id = @id;
+                ";
+                _command = new SQLiteCommand(query, _connection);
+                _command.Parameters.AddWithValue("@id", id);
+                _command.Parameters.AddWithValue("@tagId", tag.Id);
+
+                return _command.ExecuteNonQuery() > 0;
+
+            }
+            catch (SQLiteException e)
+            {
+                Console.WriteLine(e.Message);
+                return false;
+            }
+            finally
+            {
+                Close();
+            }
+        }
+
+        internal static bool UpdateTaskChecklist(long id, ChecklistItem checklist)
+        {
+            try
+            {
+                Open();
+
+                string query = @"UPDATE checklist SET isDone = @isDone WHERE assignment_id = @id;
+                ";
+                _command = new SQLiteCommand(query, _connection);
+                _command.Parameters.AddWithValue("@id", id);
+                _command.Parameters.AddWithValue("@isDone", checklist.IsChecked);
+
+                return _command.ExecuteNonQuery() > 0;
+
+            }
+            catch (SQLiteException e)
+            {
+                Console.WriteLine(e.Message);
+                return false;
+            }
+            finally
+            {
+                Close();
+            }
+        }
+
+        internal static bool UpdateTaskStatus(long id, int status)
+        {
+            try
+            {
+                Open();
+
+                string query = @"UPDATE assignment SET status = @status WHERE id = @id;
+                ";
+                _command = new SQLiteCommand(query, _connection);
+                _command.Parameters.AddWithValue("@id", id);
+                _command.Parameters.AddWithValue("@status", status);
+
+                return _command.ExecuteNonQuery() > 0;
+
+            }
+            catch (SQLiteException e)
+            {
+                Console.WriteLine(e.Message);
+                return false;
+            }
+            finally
+            {
+                Close();
+            }
+        }
+
+
+        internal static (int done, int total) GetTaskRateByProjectId(long projectId)
+        {
+            (int done, int total) checklist = (0, 0);
+            try
+            {
+                Open();
+                string query = @"SELECT 
+                    COUNT(*) AS TotalTasks,
+                    SUM(CASE WHEN status = 4 THEN 1 ELSE 0 END) AS ChecklistsDone FROM  assignment WHERE  projet_id = @id;";
+                _command = new SQLiteCommand(query, _connection);
+
+                _command.Parameters.AddWithValue("@id", projectId);
+                var reader = _command.ExecuteReader();
+                if (reader.Read())
+                {
+                    checklist.total = (int)(long)reader[0];
+                    checklist.done = (int)(long)reader[1];
+                }
+
+                return checklist;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("An error occured: " + ex.Message);
+                return checklist;
+
+            }
+            finally { Close(); }
         }
     }
 }
