@@ -67,9 +67,9 @@ namespace CodeFlowUI.Pages
             for(int i = 0; i < projectBasicInfoDTOs.Count; i++)
             {
                 var project = projectBasicInfoDTOs[i];
-                if (project.dueDate < DateTime.Now && project.status != CodeFlowBackend.Model.ProjectStatus.Late)
+                if (project.dueDate < DateTime.Now && (project.status != CodeFlowBackend.Model.ProjectStatus.Done && project.status != CodeFlowBackend.Model.ProjectStatus.Canceled))
                 {
-                    ProjectService.UpdateStatus(project.id, CodeFlowBackend.Model.ProjectStatus.Late);
+                    ProjectService.UpdateProjectStatus(project.id, CodeFlowBackend.Model.ProjectStatus.Late);
                     ProjectBasicInfoDTO updatedProject = new ProjectBasicInfoDTO(project.id, project.name, project.description, ProjectStatus.Late, project.dueDate);
                     project = updatedProject;
                 }

@@ -140,7 +140,7 @@ namespace CodeFlowUI.Pages
                 taskCard.Click += new EventHandler((object sender, EventArgs e) =>
                 {
                     this.Hide();
-                    new SpecificTaskPage(new OpenTaskPageDTO(this.projectPageDTO.UserId, task.Id, this.projectPageDTO.IsUserTechLeader)).Show();
+                    new SpecificTaskPage(new OpenTaskPageDTO(this.projectPageDTO.UserId, task.Id, this.projectPageDTO.ProjectId, this.projectPageDTO.IsUserTechLeader)).Show();
                 });
             }
 
@@ -195,7 +195,7 @@ namespace CodeFlowUI.Pages
                 taskCard.Click += new EventHandler((object sender, EventArgs e) =>
                 {
                     this.Hide();
-                    new SpecificTaskPage(new OpenTaskPageDTO(this.projectPageDTO.UserId, task.Id, this.projectPageDTO.IsUserTechLeader)).Show();
+                    new SpecificTaskPage(new OpenTaskPageDTO(this.projectPageDTO.UserId, task.Id, this.projectPageDTO.ProjectId, this.projectPageDTO.IsUserTechLeader)).Show();
                 });
             }
 
@@ -414,13 +414,13 @@ namespace CodeFlowUI.Pages
 
             this.projectContainer.Controls.Add(reviewContainer);
 
-            this.reviewContainer = new Panel();
-            this.reviewContainer.Size = new Size(281, 492);
-            this.reviewContainer.Location = new Point(903, 86);
-            this.reviewContainer.BackColor = Color.White;
-            this.reviewContainer.AutoScroll = true;
+            this.doneContainer = new Panel();
+            this.doneContainer.Size = new Size(281, 492);
+            this.doneContainer.Location = new Point(903, 86);
+            this.doneContainer.BackColor = Color.White;
+            this.doneContainer.AutoScroll = true;
 
-            this.projectContainer.Controls.Add(reviewContainer);
+            this.projectContainer.Controls.Add(doneContainer);
 
             InitDivisers();
         }

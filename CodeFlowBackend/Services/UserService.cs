@@ -114,7 +114,7 @@ namespace CodeFlowBackend.Services
             return UserRepository.GetUsersUsernameById(userId);
         }
 
-        internal static long GetUserIdByUsername(string username)
+        public static long GetUserIdByUsername(string username)
         {
             return UserRepository.GetIdByUsername(username);
         }

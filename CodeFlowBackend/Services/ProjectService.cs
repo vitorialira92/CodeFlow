@@ -77,7 +77,7 @@ namespace CodeFlowBackend.Services
             {
                 tasksDTO.Add(new TaskCardDTO(
                         task.Id, task.Name, task.DueDate, task.Assignee, 
-                        ProjectRepository.GetChecklistRateByTaskId(task.Id) ,task.Status, task.tag
+                        ProjectRepository.GetChecklistRateByTaskId(task.Id) ,task.Status, task.Tag
                     ));
             }
 
@@ -137,10 +137,10 @@ namespace CodeFlowBackend.Services
             return ProjectRepository.UpdateProjectDueDate(projectId, dueDate);
         }
 
-        public static bool UpdateStatus(long projectId, ProjectStatus status)
+        public static bool UpdateProjectStatus(long projectId, ProjectStatus status)
         {
             int statusNumber = (int)status;
-            return ProjectRepository.UpdateStatus(projectId, statusNumber);
+            return ProjectRepository.UpdateProjectStatus(projectId, statusNumber);
         }
 
         public static bool UpdateProjectDescription(long projectId, string description)
@@ -155,7 +155,7 @@ namespace CodeFlowBackend.Services
 
         public static bool CancelProject(long projectId)
         {
-            return ProjectRepository.UpdateStatus(projectId, 3);
+            return ProjectRepository.UpdateProjectStatus(projectId, 3);
         }
 
         public static List<TaskCardDTO> GetAllTasksByProjectIdAndByUserId(long projectId, long userId)
@@ -168,7 +168,7 @@ namespace CodeFlowBackend.Services
             {
                 tasksDTO.Add(new TaskCardDTO(
                         task.Id, task.Name, task.DueDate, task.Assignee,
-                        ProjectRepository.GetChecklistRateByTaskId(task.Id), task.Status, task.tag
+                        ProjectRepository.GetChecklistRateByTaskId(task.Id), task.Status, task.Tag
                     ));
             }
 
@@ -176,7 +176,7 @@ namespace CodeFlowBackend.Services
 
         }
 
-        public static IEnumerable<TaskCardDTO> GetAllTasksByProjectIdAndTagId(long projectId, long tagId)
+        public static List<TaskCardDTO> GetAllTasksByProjectIdAndTagId(long projectId, long tagId)
         {
             List<ProjectTask> tasks = ProjectRepository.GetAllTasksByProjectIdAndByTagId(projectId, tagId);
 
@@ -186,11 +186,62 @@ namespace CodeFlowBackend.Services
             {
                 tasksDTO.Add(new TaskCardDTO(
                         task.Id, task.Name, task.DueDate, task.Assignee,
-                        ProjectRepository.GetChecklistRateByTaskId(task.Id), task.Status, task.tag
+                        ProjectRepository.GetChecklistRateByTaskId(task.Id), task.Status, task.Tag
                     ));
             }
 
             return tasksDTO;
+        }
+
+        public static ProjectTask GetTaskById(long taskId)
+        {
+            return ProjectRepository.GetTaskById(taskId);
+        }
+
+        public static bool UpdateTaskDescription(long id, string description)
+        {
+            return ProjectRepository.UpdateTaskDescription(id, description);
+        }
+
+        public static bool UpdateTaskAssignee(long id, string username)
+        {
+            return ProjectRepository.UpdateTaskAssignee(id, UserService.GetUserIdByUsername(username));
+        }
+
+        public static bool UpdateTaskDueDate(long id, DateTime dueDate)
+        {
+            return ProjectRepository.UpdateTaskDueDate(id, dueDate);
+        }
+
+        public static bool UpdateTaskTag(long id, Tag tag)
+        {
+            return ProjectRepository.UpdateTaskTag(id, tag);
+        }
+
+        public static bool UpdateTaskChecklist(long projectId, long taskId, ChecklistItem checklist)
+        {
+            bool update = ProjectRepository.UpdateTaskChecklist(taskId, checklist);
+            (int done, int total) check = ProjectRepository.GetChecklistRateByTaskId(taskId);
+            if(check.done != 0 && check.done == check.total)
+            {
+                UpdateTaskStatus(projectId, taskId, 4);
+            }
+            return update;
+        }
+
+
+        public static bool UpdateTaskStatus(long projectId, long taskId, int status)
+        {
+            bool update = ProjectRepository.UpdateTaskStatus(taskId, status);
+
+            ProjectStatus projectStatus = GetProjectStatusById(projectId);
+            (int done, int total) check = ProjectRepository.GetTaskRateByProjectId(projectId);
+
+            if (projectStatus == ProjectStatus.Open && status > 1)
+                ProjectRepository.UpdateProjectStatus(projectId, 2);
+            else if (projectStatus != ProjectStatus.Done && (check.done != 0 && check.done == check.total))
+                ProjectRepository.UpdateProjectStatus(projectId, 4);
+            return update;
         }
     }
 }
