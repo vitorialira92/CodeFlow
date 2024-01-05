@@ -6,6 +6,7 @@ using CodeFlowUI.Styles;
 
 namespace CodeFlowUI.Pages
 {
+    using CodeFlowBackend.Model;
     using CodeFlowBackend.Model.User;
     using CodeFlowUI.Components;
 
@@ -58,6 +59,22 @@ namespace CodeFlowUI.Pages
         {
             this.projectBasicInfoDTOs = ProjectService.GetAllProjectsBasicInfoByUserId(loginResponseDTO.UserId!.Value);
             this.userFirstName = UserService.GetUserFirstNameByID(loginResponseDTO.UserId!.Value);
+            CheckProjectStatus(); //sets project to late if needed
+        }
+
+        private void CheckProjectStatus()
+        {
+            for(int i = 0; i < projectBasicInfoDTOs.Count; i++)
+            {
+                var project = projectBasicInfoDTOs[i];
+                if (project.dueDate < DateTime.Now && project.status != CodeFlowBackend.Model.ProjectStatus.Late)
+                {
+                    ProjectService.UpdateStatus(project.id, CodeFlowBackend.Model.ProjectStatus.Late);
+                    ProjectBasicInfoDTO updatedProject = new ProjectBasicInfoDTO(project.id, project.name, project.description, ProjectStatus.Late, project.dueDate);
+                    project = updatedProject;
+                }
+                    
+            }
         }
 
         private void InitScreen()
