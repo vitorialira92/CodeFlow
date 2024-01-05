@@ -66,10 +66,88 @@ namespace CodeFlowUI.Pages
             InitContainers();
             InitLabels();
             InitButtons();
-            InitTasks();
+            if (this.projectPageDTO.IsUserTechLeader)
+                InitTasksTechLeader();
+            else
+                InitTasksDeveloper();
         }
 
-        private void InitTasks()
+        private void InitTasksDeveloper()
+        {
+            int x = 9, yTodo = 8, yInProgress = 8, yReview = 8, yDone = 8;
+
+            int todoCount = 0, inProgressCount = 0, reviewCount = 0, doneCount = 0;
+
+            this.taskCardsDTO = ProjectService.GetAllTasksByProjectIdAndByUserId(this.projectPageDTO.ProjectId, this.projectPageDTO.UserId);
+            
+            List<string> tags = new List<string>();
+
+            List<TaskCardDTO> taskCardsCopy = new List<TaskCardDTO>(this.taskCardsDTO);
+
+            foreach (var task in taskCardsDTO)
+            {
+                if (!tags.Contains(task.Tag.Name))
+                {
+                    tags.Add(task.Tag.Name);
+                    List<TaskCardDTO> list = new List<TaskCardDTO>(ProjectService.GetAllTasksByProjectIdAndTagId(this.projectPageDTO.ProjectId, task.Tag.Id));
+                    foreach (var item in list)
+                    {
+                        if (!taskCardsCopy.Contains(item))
+                            taskCardsCopy.Add(item);
+                    }
+
+                }
+            }
+
+            this.taskCardsDTO = new List<TaskCardDTO>(taskCardsCopy);
+
+            foreach (var task in taskCardsDTO)
+            {
+                TaskCard taskCard = new TaskCard(task.Name, task.DueDate, task.Checklist, task.Assignee, task.Status, task.Tag);
+
+                int y;
+
+
+                switch (task.Status)
+                {
+                    case TasksStatus.Review:
+                        y = yReview;
+                        yReview += 112 + 9;
+                        reviewCount++;
+                        this.reviewContainer.Controls.Add(taskCard);
+                        break;
+                    case TasksStatus.Todo:
+                        y = yTodo;
+                        yTodo += 112 + 9;
+                        todoCount++;
+                        this.todoContainer.Controls.Add(taskCard);
+                        break;
+                    case TasksStatus.InProgress:
+                        y = yInProgress;
+                        yInProgress += 112 + 9;
+                        inProgressCount++;
+                        this.inProgressContainer.Controls.Add(taskCard);
+                        break;
+                    default:
+                        y = yDone;
+                        yDone += 112 + 9;
+                        doneCount++;
+                        this.doneContainer.Controls.Add(taskCard);
+                        break;
+                }
+
+                taskCard.Location = new Point(x, y);
+                taskCard.Click += new EventHandler((object sender, EventArgs e) =>
+                {
+                    this.Hide();
+                    new SpecificTaskPage(new OpenTaskPageDTO(this.projectPageDTO.UserId, task.Id, this.projectPageDTO.IsUserTechLeader)).Show();
+                });
+            }
+
+            InitStats(todoCount, inProgressCount, reviewCount, doneCount);
+        }
+
+        private void InitTasksTechLeader()
         {
 
             int x = 9, yTodo = 8, yInProgress = 8, yReview = 8, yDone = 8;

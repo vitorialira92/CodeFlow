@@ -287,7 +287,7 @@ namespace CodeFlowBackend.Repositories
             {
                 Open();
                 string query = @"select a.id, a.name, a.description, a.due_date, 
-                        a.assignee, a.status, t.name as tagname, t.color from assignment a 
+                        a.assignee, a.status, t.id as tagid, t.name as tagname, t.color from assignment a 
                         left join tag t on a.project_id = t.project_id where a.project_id = @id;";
                 _command = new SQLiteCommand(query, _connection);
                 _command.Parameters.AddWithValue("@id", projectId);
@@ -301,7 +301,7 @@ namespace CodeFlowBackend.Repositories
                     string assignee = UserService.GetUsersUsernameById((long)reader["assignee"]);
                     DateTime dueDate = DateTime.Parse(reader["due_date"].ToString());
                     TasksStatus status = (TasksStatus)(long)reader["status"];
-                    Tag tag = new Tag(reader["tagname"].ToString(), ColorTranslator.FromHtml(reader["color"].ToString()));
+                    Tag tag = new Tag((long)reader["tagid"], reader["tagname"].ToString(), ColorTranslator.FromHtml(reader["color"].ToString()));
                     tasks.Add(new ProjectTask(id, name, description, dueDate, assignee, status, tag));
                 }
 
@@ -731,6 +731,86 @@ namespace CodeFlowBackend.Repositories
             {
                 Console.WriteLine(e.Message);
                 return false;
+            }
+            finally
+            {
+                Close();
+            }
+        }
+
+        internal static List<ProjectTask> GetAllTasksByProjectIdAndByUserId(long projectId, long userId)
+        {
+            List<ProjectTask> tasks = new List<ProjectTask>();
+
+            try
+            {
+                Open();
+                string query = @"select a.id, a.name, a.description, a.due_date, 
+                        a.assignee, a.status, t.id as tagid, t.name as tagname, t.color from assignment a 
+                        left join tag t on a.project_id = t.project_id where a.project_id = @id and a.assignee = @userId;";
+                _command = new SQLiteCommand(query, _connection);
+                _command.Parameters.AddWithValue("@id", projectId);
+                _command.Parameters.AddWithValue("@userId", userId);
+
+                var reader = _command.ExecuteReader();
+                while (reader.Read())
+                {
+                    long id = (long)reader["id"];
+                    string name = reader["name"].ToString();
+                    string description = reader["description"].ToString();
+                    string assignee = UserService.GetUsersUsernameById((long)reader["assignee"]);
+                    DateTime dueDate = DateTime.Parse(reader["due_date"].ToString());
+                    TasksStatus status = (TasksStatus)(long)reader["status"];
+                    Tag tag = new Tag((long)reader["tagid"], reader["tagname"].ToString(), ColorTranslator.FromHtml(reader["color"].ToString()));
+                    tasks.Add(new ProjectTask(id, name, description, dueDate, assignee, status, tag));
+                }
+
+                return tasks;
+            }
+            catch (SQLiteException e)
+            {
+                Console.WriteLine(e.Message);
+                return tasks;
+            }
+            finally
+            {
+                Close();
+            }
+        }
+
+        internal static List<ProjectTask> GetAllTasksByProjectIdAndByTagId(long projectId, long tagId)
+        {
+            List<ProjectTask> tasks = new List<ProjectTask>();
+
+            try
+            {
+                Open();
+                string query = @"select a.id, a.name, a.description, a.due_date, 
+                        a.assignee, a.status, t.id as tagid, t.name as tagname, t.color from assignment a 
+                        left join tag t on a.project_id = t.project_id where a.project_id = @id and t.id = @tagId;";
+                _command = new SQLiteCommand(query, _connection);
+                _command.Parameters.AddWithValue("@id", projectId);
+                _command.Parameters.AddWithValue("@tagId", tagId);
+
+                var reader = _command.ExecuteReader();
+                while (reader.Read())
+                {
+                    long id = (long)reader["id"];
+                    string name = reader["name"].ToString();
+                    string description = reader["description"].ToString();
+                    string assignee = UserService.GetUsersUsernameById((long)reader["assignee"]);
+                    DateTime dueDate = DateTime.Parse(reader["due_date"].ToString());
+                    TasksStatus status = (TasksStatus)(long)reader["status"];
+                    Tag tag = new Tag((long)reader["tagid"], reader["tagname"].ToString(), ColorTranslator.FromHtml(reader["color"].ToString()));
+                    tasks.Add(new ProjectTask(id, name, description, dueDate, assignee, status, tag));
+                }
+
+                return tasks;
+            }
+            catch (SQLiteException e)
+            {
+                Console.WriteLine(e.Message);
+                return tasks;
             }
             finally
             {

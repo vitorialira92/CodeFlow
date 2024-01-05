@@ -2,6 +2,7 @@
 using CodeFlowBackend.Model;
 using CodeFlowBackend.Model.Project;
 using CodeFlowBackend.Model.Tasks;
+using CodeFlowBackend.Model.User;
 using CodeFlowBackend.Repositories;
 using Microsoft.VisualBasic;
 using System;
@@ -11,6 +12,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using static System.Data.Entity.Infrastructure.Design.Executor;
 
 namespace CodeFlowBackend.Services
 {
@@ -118,6 +120,77 @@ namespace CodeFlowBackend.Services
                 return false;
 
             return ProjectRepository.InviteToProject(projectId, userId);
+        }
+
+        public static ProjectOverviewDTO GetProjectOverviewById(long projectId)
+        {
+            return ProjectRepository.GetProjectOverviewById(projectId);
+        }
+
+        public static bool RemoveMemberFromProject(long projectId, long memberId)
+        {
+            return ProjectRepository.RemoveMemberFromProject(projectId, memberId);
+        }
+
+        public static bool UpdateProjectDueDate(long projectId, DateTime dueDate)
+        {
+            return ProjectRepository.UpdateProjectDueDate(projectId, dueDate);
+        }
+
+        public static bool UpdateStatus(long projectId, ProjectStatus status)
+        {
+            int statusNumber = (int)status;
+            return ProjectRepository.UpdateStatus(projectId, statusNumber);
+        }
+
+        public static bool UpdateProjectDescription(long projectId, string description)
+        {
+            return ProjectRepository.UpdateProjectDescription(projectId, description);
+        }
+
+        public static bool UpdateProjectName(long projectId, string newName)
+        {
+            return ProjectRepository.UpdateProjectName(projectId, newName);
+        }
+
+        public static bool CancelProject(long projectId)
+        {
+            return ProjectRepository.UpdateStatus(projectId, 3);
+        }
+
+        public static List<TaskCardDTO> GetAllTasksByProjectIdAndByUserId(long projectId, long userId)
+        {
+            List<ProjectTask> tasks = ProjectRepository.GetAllTasksByProjectIdAndByUserId(projectId, userId);
+
+            List<TaskCardDTO> tasksDTO = new List<TaskCardDTO>();
+
+            foreach (var task in tasks)
+            {
+                tasksDTO.Add(new TaskCardDTO(
+                        task.Id, task.Name, task.DueDate, task.Assignee,
+                        ProjectRepository.GetChecklistRateByTaskId(task.Id), task.Status, task.tag
+                    ));
+            }
+
+            return tasksDTO;
+
+        }
+
+        public static IEnumerable<TaskCardDTO> GetAllTasksByProjectIdAndTagId(long projectId, long tagId)
+        {
+            List<ProjectTask> tasks = ProjectRepository.GetAllTasksByProjectIdAndByTagId(projectId, tagId);
+
+            List<TaskCardDTO> tasksDTO = new List<TaskCardDTO>();
+
+            foreach (var task in tasks)
+            {
+                tasksDTO.Add(new TaskCardDTO(
+                        task.Id, task.Name, task.DueDate, task.Assignee,
+                        ProjectRepository.GetChecklistRateByTaskId(task.Id), task.Status, task.tag
+                    ));
+            }
+
+            return tasksDTO;
         }
     }
 }
