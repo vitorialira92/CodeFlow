@@ -4,6 +4,7 @@ using CodeFlowBackend.Model.Project;
 using CodeFlowBackend.Model.Tasks;
 using CodeFlowBackend.Model.User;
 using CodeFlowBackend.Services;
+using Microsoft.VisualBasic;
 using System;
 using System.Collections.Generic;
 using System.Data.SQLite;
@@ -12,6 +13,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using static System.Data.Entity.Infrastructure.Design.Executor;
 using static System.Net.Mime.MediaTypeNames;
 
 namespace CodeFlowBackend.Repositories
@@ -532,6 +534,195 @@ namespace CodeFlowBackend.Repositories
                 _command = new SQLiteCommand(query, _connection);
                 _command.Parameters.AddWithValue("@userId", userId);
                 _command.Parameters.AddWithValue("@projectId", projectId);
+
+                return _command.ExecuteNonQuery() > 0;
+
+            }
+            catch (SQLiteException e)
+            {
+                Console.WriteLine(e.Message);
+                return false;
+            }
+            finally
+            {
+                Close();
+            }
+        }
+
+        internal static ProjectOverviewDTO GetProjectOverviewById(long projectId)
+        {
+            ProjectOverviewDTO response = null;
+            try
+            {
+                Open();
+
+                string query = "SELECT name, description, due_date FROM project WHERE id = @id;";
+
+                _command = new SQLiteCommand(query, _connection);
+                _command.Parameters.AddWithValue("@id", projectId);
+
+                var reader = _command.ExecuteReader();
+
+                if (reader.Read())
+                {
+                    string name = reader["name"].ToString();
+                    string description = reader["description"].ToString();
+                    DateTime dueDate = DateTime.Parse(reader["due_date"].ToString());
+
+                    List<long> membersId = new List<long>();
+
+                    query = "SELECT member_id FROM project_members WHERE project_id = @id and left_date IS NULL;";
+
+                    _command = new SQLiteCommand(query, _connection);
+                    _command.Parameters.AddWithValue("@id", projectId);
+
+                    reader = _command.ExecuteReader();
+                    while(reader.Read())
+                    {
+                        membersId.Add((long)reader["member_id"]);
+                    }
+
+                    response = new ProjectOverviewDTO(projectId, name, description, dueDate, membersId);
+                }
+                    
+
+                return response;
+            }
+            catch (SQLiteException e)
+            {
+                Console.WriteLine($"Error: {e.Message}");
+                return response;
+            }
+            finally
+            {
+                Close();
+            }
+        }
+
+        internal static bool RemoveMemberFromProject(long projectId, long memberId)
+        {
+            try
+            {
+                Open();
+
+                string query = @"UPDATE project_members SET left_date = @leftDate WHERE member_id = @memberId AND project_id = @projectId;
+                ";
+                _command = new SQLiteCommand(query, _connection);
+                _command.Parameters.AddWithValue("@memberId", memberId);
+                _command.Parameters.AddWithValue("@projectId", projectId);
+                _command.Parameters.AddWithValue("@leftDate", DateTime.Today);
+
+                bool removed = _command.ExecuteNonQuery() > 0;
+
+                query = @"UPDATE assignment SET assignee = NULL WHERE assignee = @memberId AND project_id = @projectId;
+                ";
+                _command = new SQLiteCommand(query, _connection);
+                _command.Parameters.AddWithValue("@memberId", memberId);
+                _command.Parameters.AddWithValue("@projectId", projectId);
+                _command.ExecuteNonQuery();
+
+                return removed;
+            }
+            catch (SQLiteException e)
+            {
+                Console.WriteLine(e.Message);
+                return false;
+            }
+            finally
+            {
+                Close();
+            }
+        }
+
+        internal static bool UpdateProjectDueDate(long projectId, DateTime dueDate)
+        {
+            try
+            {
+                Open();
+
+                string query = @"UPDATE project SET due_date = @dueDate WHERE id = @projectId;
+                ";
+                _command = new SQLiteCommand(query, _connection);
+                _command.Parameters.AddWithValue("@projectId", projectId);
+                _command.Parameters.AddWithValue("@dueDate", dueDate);
+
+                return _command.ExecuteNonQuery() > 0;
+
+            }
+            catch (SQLiteException e)
+            {
+                Console.WriteLine(e.Message);
+                return false;
+            }
+            finally
+            {
+                Close();
+            }
+        }
+
+        internal static bool UpdateStatus(long projectId, int status)
+        {
+            try
+            {
+                Open();
+
+                string query = @"UPDATE project SET status = @status WHERE id = @projectId;
+                ";
+                _command = new SQLiteCommand(query, _connection);
+                _command.Parameters.AddWithValue("@projectId", projectId);
+                _command.Parameters.AddWithValue("@status", status);
+
+                return _command.ExecuteNonQuery() > 0;
+
+            }
+            catch (SQLiteException e)
+            {
+                Console.WriteLine(e.Message);
+                return false;
+            }
+            finally
+            {
+                Close();
+            }
+        }
+
+        internal static bool UpdateProjectDescription(long projectId, string description)
+        {
+            try
+            {
+                Open();
+
+                string query = @"UPDATE project SET description = @description WHERE id = @projectId;
+                ";
+                _command = new SQLiteCommand(query, _connection);
+                _command.Parameters.AddWithValue("@projectId", projectId);
+                _command.Parameters.AddWithValue("@description", description);
+
+                return _command.ExecuteNonQuery() > 0;
+
+            }
+            catch (SQLiteException e)
+            {
+                Console.WriteLine(e.Message);
+                return false;
+            }
+            finally
+            {
+                Close();
+            }
+        }
+
+        internal static bool UpdateProjectName(long projectId, string name)
+        {
+            try
+            {
+                Open();
+
+                string query = @"UPDATE project SET name = @name WHERE id = @projectId;
+                ";
+                _command = new SQLiteCommand(query, _connection);
+                _command.Parameters.AddWithValue("@projectId", projectId);
+                _command.Parameters.AddWithValue("@name", name);
 
                 return _command.ExecuteNonQuery() > 0;
 

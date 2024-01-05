@@ -12,9 +12,14 @@ namespace CodeFlowUI.Pages
 {
     public partial class ProjectSettings : Form
     {
-        public ProjectSettings(long projectId)
+        public ProjectSettings(long projectId, long userId)
         {
-            InitializeComponent(projectId);
+            InitializeComponent(projectId, userId);
+        }
+
+        private void ProjectSettingsPage_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            Application.Exit();
         }
     }
 }

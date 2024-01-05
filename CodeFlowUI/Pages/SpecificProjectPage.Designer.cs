@@ -271,7 +271,7 @@ namespace CodeFlowUI.Pages
                 this.settingsButton.Click += new EventHandler((object sender, EventArgs e) =>
                 {
                     this.Hide();
-                    new ProjectSettings(this.projectPageDTO.ProjectId).Show();
+                    new ProjectSettings(this.projectPageDTO.ProjectId, this.projectPageDTO.UserId).Show();
                 });
 
                 this.Controls.Add(settingsButton);
