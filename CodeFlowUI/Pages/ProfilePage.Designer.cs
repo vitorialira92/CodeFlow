@@ -16,7 +16,6 @@ namespace CodeFlowUI.Pages
         //forms components
         private Button backToHomePageButton;
         private Button changePasswordButton;
-        private Button deleteAccountButton;
         private RoundedTextBox firstNameTextBox;
         private RoundedTextBox lastNameTextBox;
         private RoundedTextBox emailTextBox;
@@ -312,21 +311,7 @@ namespace CodeFlowUI.Pages
                 this.Hide();
             });
             this.Controls.Add(changePasswordButton);
-
-            this.deleteAccountButton = new System.Windows.Forms.Button();
-            this.deleteAccountButton.Image = Image.FromFile(@"Resources\delete-account-button.png");
-            this.deleteAccountButton.Location = new Point(516, 761);
-            this.deleteAccountButton.Size = new Size(247, 24);
-            this.deleteAccountButton.BackColor = Color.Transparent;
-            this.deleteAccountButton.FlatAppearance.BorderSize = 0;
-            this.deleteAccountButton.FlatStyle = FlatStyle.Flat;
-            this.deleteAccountButton.Cursor = Cursors.Hand;
-            this.deleteAccountButton.Click += new EventHandler((object sender, EventArgs e) =>
-            {
-                new DeleteAccountPage(user.Id).Show();
-                this.Hide();
-            });
-            this.Controls.Add(deleteAccountButton);
+    
         }
 
         private void AddExperienceLevelComboBox()

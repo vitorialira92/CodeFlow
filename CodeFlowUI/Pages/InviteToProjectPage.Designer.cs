@@ -84,7 +84,7 @@ namespace CodeFlowUI.Pages
             this.homepageButton.Click += new EventHandler((object sender, EventArgs e) =>
             {
                 this.Hide();
-                new HomePage(new LoginResponseDTO(this.userId, true)).Show();
+                new SpecificProjectPage(new ProjectPageDTO(this.projectId, this.userId, true)).Show();
             });
 
             this.Controls.Add(homepageButton);

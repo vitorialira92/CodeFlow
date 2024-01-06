@@ -295,7 +295,8 @@ namespace CodeFlowUI.Pages
             this.homepageButton.Click += new EventHandler((object sender, EventArgs e) =>
             {
                 this.Hide();
-                new HomePage(new LoginResponseDTO(this.openTaskPageDTO.UserId, this.openTaskPageDTO.isUserTechLeader)).Show();
+                new SpecificProjectPage(new ProjectPageDTO(this.openTaskPageDTO.ProjectId, this.openTaskPageDTO.UserId, 
+                    this.openTaskPageDTO.isUserTechLeader)).Show();
             });
 
             this.Controls.Add(homepageButton);
@@ -323,12 +324,24 @@ namespace CodeFlowUI.Pages
                     update = update && ProjectService.UpdateTaskDueDate(this.projectTask.Id, this.dueDatePicker.Value);
 
                 if (this.tagComboBox.SelectedText != this.projectTask.Tag.Name)
-                    update = update && ProjectService.UpdateTaskTag(this.projectTask.Id, this.allTags.ElementAt(this.tagComboBox.SelectedIndex-1));
-                
-                foreach(var item in this.projectTask.Checklist)
                 {
-                    if(!checklistCopy.Contains(item))
-                        update = update && ProjectService.UpdateTaskChecklist(this.openTaskPageDTO.ProjectId, this.projectTask.Id, item);
+                    if (this.tagComboBox.SelectedIndex != 0)
+                        update = update && ProjectService.UpdateTaskTag(this.projectTask.Id, this.allTags.ElementAt(this.tagComboBox.SelectedIndex - 1));
+                    else
+                        update = update && ProjectService.RemoveTaskTag(this.projectTask.Id);
+                }
+                    
+               
+                
+                for(int i = 0; i < this.projectTask.Checklist.Count; i++)
+                {
+                    var original = projectTask.Checklist.ElementAt(i);
+
+                    var newItem = checklistCopy.ElementAt(i);
+
+                    if (original.IsChecked ==newItem.IsChecked)
+                        update = update && ProjectService.UpdateTaskChecklist(this.openTaskPageDTO.ProjectId, this.projectTask.Id, 
+                            original.Id, newItem.IsChecked);
                 }
 
                 if (this.statusComboBox.SelectedIndex + 1 != (int)this.projectTask.Status)

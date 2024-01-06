@@ -218,9 +218,9 @@ namespace CodeFlowBackend.Services
             return ProjectRepository.UpdateTaskTag(id, tag);
         }
 
-        public static bool UpdateTaskChecklist(long projectId, long taskId, ChecklistItem checklist)
+        public static bool UpdateTaskChecklist(long projectId, long taskId, long checklistId, bool isDone)
         {
-            bool update = ProjectRepository.UpdateTaskChecklist(taskId, checklist);
+            bool update = ProjectRepository.UpdateTaskChecklist(checklistId, isDone);
             (int done, int total) check = ProjectRepository.GetChecklistRateByTaskId(taskId);
             if(check.done != 0 && check.done == check.total)
             {
@@ -242,6 +242,11 @@ namespace CodeFlowBackend.Services
             else if (projectStatus != ProjectStatus.Done && (check.done != 0 && check.done == check.total))
                 ProjectRepository.UpdateProjectStatus(projectId, 4);
             return update;
+        }
+
+        public static bool RemoveTaskTag(long taskId)
+        {
+            return ProjectRepository.RemoveTaskTag(taskId);
         }
     }
 }

@@ -227,7 +227,7 @@ namespace CodeFlowUI.Pages
             this.homepageButton.Click += new EventHandler((object sender, EventArgs e) =>
             {
                 this.Hide();
-                new HomePage(new LoginResponseDTO(this.projectPageDTO.UserId, this.projectPageDTO.IsUserTechLeader)).Show();
+                new SpecificProjectPage(new ProjectPageDTO(this.projectPageDTO.ProjectId, this.projectPageDTO.UserId, this.projectPageDTO.IsUserTechLeader)).Show();
             });
 
             this.Controls.Add(homepageButton);

@@ -978,17 +978,17 @@ namespace CodeFlowBackend.Repositories
             }
         }
 
-        internal static bool UpdateTaskChecklist(long id, ChecklistItem checklist)
+        internal static bool UpdateTaskChecklist(long id, bool isDone)
         {
             try
             {
                 Open();
 
-                string query = @"UPDATE checklist SET isDone = @isDone WHERE assignment_id = @id;
+                string query = @"UPDATE checklist SET isDone = @isDone WHERE ID = @id;
                 ";
                 _command = new SQLiteCommand(query, _connection);
                 _command.Parameters.AddWithValue("@id", id);
-                _command.Parameters.AddWithValue("@isDone", checklist.IsChecked);
+                _command.Parameters.AddWithValue("@isDone", isDone);
 
                 return _command.ExecuteNonQuery() > 0;
 
@@ -1039,7 +1039,7 @@ namespace CodeFlowBackend.Repositories
                 Open();
                 string query = @"SELECT 
                     COUNT(*) AS TotalTasks,
-                    SUM(CASE WHEN status = 4 THEN 1 ELSE 0 END) AS ChecklistsDone FROM  assignment WHERE  projet_id = @id;";
+                    SUM(CASE WHEN status = 4 THEN 1 ELSE 0 END) AS ChecklistsDone FROM  assignment WHERE  project_id = @id;";
                 _command = new SQLiteCommand(query, _connection);
 
                 _command.Parameters.AddWithValue("@id", projectId);
@@ -1059,6 +1059,31 @@ namespace CodeFlowBackend.Repositories
 
             }
             finally { Close(); }
+        }
+
+        internal static bool RemoveTaskTag(long taskId)
+        {
+            try
+            {
+                Open();
+
+                string query = @"UPDATE assignment SET tag_id = NULL WHERE id = @id;
+                ";
+                _command = new SQLiteCommand(query, _connection);
+                _command.Parameters.AddWithValue("@id", taskId);
+
+                return _command.ExecuteNonQuery() > 0;
+
+            }
+            catch (SQLiteException e)
+            {
+                Console.WriteLine(e.Message);
+                return false;
+            }
+            finally
+            {
+                Close();
+            }
         }
     }
 }
