@@ -218,14 +218,50 @@ namespace CodeFlowBackend.Services
             return ProjectRepository.UpdateTaskTag(id, tag);
         }
 
-        public static bool UpdateTaskChecklist(long projectId, long taskId, long checklistId, bool isDone)
+        public static bool UpdateTaskChecklist(long projectId, long userId, long taskId, long checklistId, bool isDone)
         {
             bool update = ProjectRepository.UpdateTaskChecklist(checklistId, isDone);
             (int done, int total) check = ProjectRepository.GetChecklistRateByTaskId(taskId);
             if(check.done != 0 && check.done == check.total)
             {
-                UpdateTaskStatus(projectId, taskId, 4);
+                if(UserService.IsUserTechLeader(userId))
+                    UpdateTaskStatus(projectId, taskId, 4);
+                else
+                    UpdateTaskStatus(projectId, taskId, 3);
             }
+            ProjectTask task = ProjectRepository.GetTaskById(taskId);
+            if((task.Status == TasksStatus.Done || task.Status == TasksStatus.Review) && check.done != check.total)
+            {
+                if(check.done == 0)
+                    UpdateTaskStatus(projectId, taskId, 1);
+                else
+                    UpdateTaskStatus(projectId, taskId, 2);
+            }
+            else if (task.Status == TasksStatus.InProgress && check.done != check.total && check.done == 0)
+            {
+                UpdateTaskStatus(projectId, taskId, 1);
+            }
+            else if (task.Status == TasksStatus.Todo && check.done != check.total && check.done != 0)
+            {
+                UpdateTaskStatus(projectId, taskId, 2);
+            }
+            check = ProjectRepository.GetTaskRateByProjectId(projectId);
+            long status = ProjectRepository.GetProjectStatusById(projectId);
+            /* Open = 1,
+        OnGoing = 2,
+        Canceled = 3,
+        Done = 4,
+        Late = 5*/
+
+            if (check.done != check.total && check.done != 0 && status != 2 && status != 3)
+                ProjectRepository.UpdateProjectStatus(projectId, 2);
+            else if (check.done == check.total && check.done != 0 && status != 4 && status != 3)
+                ProjectRepository.UpdateProjectStatus(projectId, 4);
+            else if (check.done != check.total && check.done != 0 && status == 4)
+                ProjectRepository.UpdateProjectStatus(projectId, 2);
+            else if (check.done == 0 && status == 4)
+                ProjectRepository.UpdateProjectStatus(projectId, 1);
+
             return update;
         }
 

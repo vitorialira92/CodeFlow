@@ -14,14 +14,14 @@ namespace CodeFlowUI.Components
 {
     internal class TaskCard : Panel
     {
-        public TaskCard(string taskName, DateTime dueDate,(int done, int total) checklist, string assignee, TasksStatus status, Tag? tag)
+        public TaskCard(string taskName, DateTime? dueDate,(int done, int total) checklist, string assignee, TasksStatus status, Tag? tag)
         {
             this.Cursor = Cursors.Hand;
             Width = 260;
             Height = 112;
             BorderStyle = BorderStyle.None;
             AddTaskName(taskName, status);
-            AddDueDate(dueDate.Date);
+            AddDueDate(dueDate);
             AddChecklist(checklist);
             if (dueDate < DateTime.Today)
                 AddLateLabel();
@@ -120,10 +120,13 @@ namespace CodeFlowUI.Components
 
             Controls.Add(statusCircle);
         }
-        private void AddDueDate(DateTime dueDate)
+        private void AddDueDate(DateTime? dueDate)
         {
             Label dueDateLabel = new Label();
-            dueDateLabel.Text = $"Due {dueDate.ToString("MM/dd/yy")}";
+            if (dueDate != null)
+                dueDateLabel.Text = $"Due {dueDate!.Value.ToString("MM/dd/yy")}";
+            else
+                dueDateLabel.Text = "Due date not set yet";
             dueDateLabel.ForeColor = Colors.DarkBlue;
             dueDateLabel.Font = new Font("Ubuntu Light", 8);
             dueDateLabel.Location = new Point(20, 39);
