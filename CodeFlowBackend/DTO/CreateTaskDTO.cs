@@ -15,9 +15,9 @@ namespace CodeFlowBackend.DTO
         public Tag tag { get; private set; }
         public List<string> Checklist { get; private set; }
         public string AssigneeUsername { get; private set; }
-        public DateTime DueDate { get;private set; }
+        public DateTime? DueDate { get;private set; }
 
-        public CreateTaskDTO(long projectId, string name, string description, Tag? tag, List<string>? checklist, string assigneeUsername, DateTime dueDate)
+        public CreateTaskDTO(long projectId, string name, string description, Tag? tag, List<string>? checklist, string assigneeUsername, DateTime? dueDate)
         {
             ProjectId = projectId;
             Name = name;

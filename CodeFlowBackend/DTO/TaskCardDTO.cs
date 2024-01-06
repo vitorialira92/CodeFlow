@@ -12,13 +12,13 @@ namespace CodeFlowBackend.DTO
     {
         public long Id { get; private set; }    
         public string Name { get; private set; }
-        public DateTime DueDate { get; private set; }
+        public DateTime? DueDate { get; private set; }
         public string Assignee { get; private set; }
         public (int done, int total) Checklist { get; private set; }
         public TasksStatus Status { get; private set; } 
         public Tag Tag { get; private set; }
 
-        public TaskCardDTO(long id, string name, DateTime dueDate, string assignee, (int done, int total) checklist, TasksStatus status, Tag tag)
+        public TaskCardDTO(long id, string name, DateTime? dueDate, string assignee, (int done, int total) checklist, TasksStatus status, Tag tag)
         {
             Id = id;
             Name = name;
