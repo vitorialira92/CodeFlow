@@ -173,15 +173,19 @@ namespace CodeFlowUI.Pages
             foreach (Tag tag in allTags)
             {
                 count++;
-                if (tag.Id == this.projectTask.Tag.Id)
+                if (projectTask.Tag != null)
                 {
-                    ChangeTagColor(tag.Name);
-                    index = count;
+                    if (tag.Id == this.projectTask.Tag.Id)
+                    {
+                        ChangeTagColor(tag.Name);
+                        index = count;
+                    }
                 }
-                    
+
                 this.tagComboBox.Items.Add(tag.Name);
             }
-            this.tagComboBox.SelectedIndex = count;
+            
+            this.tagComboBox.SelectedIndex = index;
 
             this.tagComboBox.SelectedIndexChanged += new EventHandler(tagComboBox_SelectedIndexChanged);
 
@@ -248,7 +252,11 @@ namespace CodeFlowUI.Pages
             dueDatePicker = new DateTimePicker();
             dueDatePicker.Location = new Point(737, 276);
             dueDatePicker.MinDate = DateTime.Today;
-            dueDatePicker.Value = this.projectTask.DueDate;
+            if(this.projectTask.DueDate!=null)
+                dueDatePicker.Value = this.projectTask.DueDate!.Value;
+            else 
+                dueDatePicker.Value = DateTime.Today;
+
             if (!this.openTaskPageDTO.isUserTechLeader)
                 this.dueDatePicker.Enabled = false;
 
@@ -323,13 +331,14 @@ namespace CodeFlowUI.Pages
                 if (this.dueDatePicker.Value != this.projectTask.DueDate)
                     update = update && ProjectService.UpdateTaskDueDate(this.projectTask.Id, this.dueDatePicker.Value);
 
-                if (this.tagComboBox.SelectedText != this.projectTask.Tag.Name)
-                {
-                    if (this.tagComboBox.SelectedIndex != 0)
-                        update = update && ProjectService.UpdateTaskTag(this.projectTask.Id, this.allTags.ElementAt(this.tagComboBox.SelectedIndex - 1));
-                    else
-                        update = update && ProjectService.RemoveTaskTag(this.projectTask.Id);
-                }
+                if(this.projectTask.Tag != null)
+                    if (this.tagComboBox.SelectedText != this.projectTask.Tag.Name)
+                    {
+                        if (this.tagComboBox.SelectedIndex != 0)
+                            update = update && ProjectService.UpdateTaskTag(this.projectTask.Id, this.allTags.ElementAt(this.tagComboBox.SelectedIndex - 1));
+                        else
+                            update = update && ProjectService.RemoveTaskTag(this.projectTask.Id);
+                    }
                     
                
                 
@@ -340,7 +349,8 @@ namespace CodeFlowUI.Pages
                     var newItem = checklistCopy.ElementAt(i);
 
                     if (original.IsChecked ==newItem.IsChecked)
-                        update = update && ProjectService.UpdateTaskChecklist(this.openTaskPageDTO.ProjectId, this.projectTask.Id, 
+                        update = update && ProjectService.UpdateTaskChecklist(this.openTaskPageDTO.ProjectId,this.openTaskPageDTO.UserId, 
+                            this.projectTask.Id, 
                             original.Id, newItem.IsChecked);
                 }
 
@@ -373,7 +383,7 @@ namespace CodeFlowUI.Pages
                 return true;
             if (this.dueDatePicker.Value != this.projectTask.DueDate)
                 return true;
-            if (this.tagComboBox.SelectedText != this.projectTask.Tag.Name)
+            if (this.projectTask.Tag != null && this.tagComboBox.SelectedText != this.projectTask.Tag.Name)
                 return true;
             if(this.checklistCopy != this.projectTask.Checklist) 
                 return true;

@@ -174,6 +174,8 @@ namespace CodeFlowUI.Pages
             dueDatePicker = new DateTimePicker();
             dueDatePicker.Location = new Point(795, 191);
             dueDatePicker.MinDate = DateTime.Today;
+            if (!this.projectPageDTO.IsUserTechLeader)
+                dueDatePicker.Enabled = false;
 
             this.Controls.Add(dueDatePicker);
 
@@ -352,7 +354,9 @@ namespace CodeFlowUI.Pages
                 string name = this.nameTextBox.TextBox.Text;
                 string description = this.descriptionTextBox.TextBox.Text;
                 string assignee = this.assigneeTextBox.TextBox.Text;
-                DateTime dueDate = this.dueDatePicker.Value;
+                DateTime? dueDate = null;
+                if (this.projectPageDTO.IsUserTechLeader)
+                    dueDate = this.dueDatePicker.Value;
 
                 if (ProjectService.CreateTask(new CreateTaskDTO(this.projectPageDTO.ProjectId, name, description, selectedTag, checklist, assignee, dueDate)))
                 {

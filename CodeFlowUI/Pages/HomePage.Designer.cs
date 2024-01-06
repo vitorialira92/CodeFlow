@@ -137,7 +137,7 @@ namespace CodeFlowUI.Pages
 
                 switch (project.status)
                 {
-                    case CodeFlowBackend.Model.ProjectStatus.Canceled: canceledCount++; break;
+                    case CodeFlowBackend.Model.ProjectStatus.Canceled: projectCard.Enabled = false; canceledCount++; break;
                     case CodeFlowBackend.Model.ProjectStatus.Done: doneCount++; break;
                     case CodeFlowBackend.Model.ProjectStatus.Late: lateCount++; break;
                     case CodeFlowBackend.Model.ProjectStatus.OnGoing: ongoingCount++; break;

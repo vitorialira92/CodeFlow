@@ -105,7 +105,7 @@ namespace CodeFlowUI.Pages
             int xText = 22, yText = 16;
             int xTrash = 285, yTrash = 17;
 
-            foreach (var memberId in projectOverviewDTO.membersId)
+            foreach (var memberId in membersIdCopy)
             {
                 Label memberLabel = new Label();
                 memberLabel.Text = UserService.GetUsersUsernameById(memberId);

@@ -135,20 +135,26 @@ namespace CodeFlowBackend.Repositories
 
         }
 
-        internal static bool CreateTask(long projectId, string name, string description, long? tagId, List<string> checklist, long assingeedId, DateTime dueDate)
+        internal static bool CreateTask(long projectId, string name, string description, long? tagId, List<string> checklist, long assingeedId, DateTime? dueDate)
         {
             try
             {
                 Open();
-
-                string query = @"insert into assignment (project_id, name, description, due_date, assignee, status, tag_id) 
-                        values (@projectId, @name, @description, @due_date, @assignee, 1, @tag_id);
-                ";
+                string query;
+                if (dueDate!= null)
+                    query = @"insert into assignment (project_id, name, description, due_date, assignee, status, tag_id) 
+                            values (@projectId, @name, @description, @due_date, @assignee, 1, @tag_id);
+                    ";
+                else
+                    query = @"insert into assignment (project_id, name, description,  assignee, status, tag_id) 
+                            values (@projectId, @name, @description, @assignee, 1, @tag_id);
+                    ";
                 _command = new SQLiteCommand(query, _connection);
                 _command.Parameters.AddWithValue("@projectId", projectId);
                 _command.Parameters.AddWithValue("@name", name);
                 _command.Parameters.AddWithValue("@description", description);
-                _command.Parameters.AddWithValue("@due_date", dueDate);
+                if (dueDate != null)
+                    _command.Parameters.AddWithValue("@due_date", dueDate);
                 _command.Parameters.AddWithValue("@assignee", assingeedId);
                 _command.Parameters.AddWithValue("@tag_id", tagId);
 
@@ -288,7 +294,7 @@ namespace CodeFlowBackend.Repositories
                 Open();
                 string query = @"select a.id, a.name, a.description, a.due_date, 
                         a.assignee, a.status, t.id as tagid, t.name as tagname, t.color from assignment a 
-                        left join tag t on a.project_id = t.project_id where a.project_id = @id and a.tag_id = t.id;";
+                       LEFT JOIN tag t ON a.tag_id = t.id where a.project_id = @id;";
                 _command = new SQLiteCommand(query, _connection);
                 _command.Parameters.AddWithValue("@id", projectId);
 
@@ -299,9 +305,13 @@ namespace CodeFlowBackend.Repositories
                     string name = reader["name"].ToString();
                     string description = reader["description"].ToString();
                     string assignee = UserService.GetUsersUsernameById((long)reader["assignee"]);
-                    DateTime dueDate = DateTime.Parse(reader["due_date"].ToString());
+                    DateTime? dueDate = null;
+                    dueDate = reader["due_date"] != DBNull.Value ? DateTime.Parse(reader["due_date"].ToString()) : null;
                     TasksStatus status = (TasksStatus)(long)reader["status"];
-                    Tag tag = new Tag((long)reader["tagid"], reader["tagname"].ToString(), ColorTranslator.FromHtml(reader["color"].ToString()));
+                    Tag tag = null;
+                    long? tagid = reader["tagid"] != DBNull.Value ? (long?)reader["tagid"] : null;
+                    if (tagid != null)
+                        tag = new Tag((long)reader["tagid"], reader["tagname"].ToString(), ColorTranslator.FromHtml(reader["color"].ToString()));
                     tasks.Add(new ProjectTask(id, name, description, dueDate, assignee, status, tag));
                 }
 
@@ -747,7 +757,7 @@ namespace CodeFlowBackend.Repositories
                 Open();
                 string query = @"select a.id, a.name, a.description, a.due_date, 
                         a.assignee, a.status, t.id as tagid, t.name as tagname, t.color from assignment a 
-                        left join tag t on a.project_id = t.project_id where a.project_id = @id and a.assignee = @userId and a.tag_id = t.id;";
+                        LEFT JOIN tag t ON a.tag_id = t.id where a.project_id = @id and a.assignee = @userId;";
                 _command = new SQLiteCommand(query, _connection);
                 _command.Parameters.AddWithValue("@id", projectId);
                 _command.Parameters.AddWithValue("@userId", userId);
@@ -759,10 +769,15 @@ namespace CodeFlowBackend.Repositories
                     string name = reader["name"].ToString();
                     string description = reader["description"].ToString();
                     string assignee = UserService.GetUsersUsernameById((long)reader["assignee"]);
-                    DateTime dueDate = DateTime.Parse(reader["due_date"].ToString());
+                    DateTime? dueDate = null;
+                    dueDate = reader["due_date"] != DBNull.Value ? DateTime.Parse(reader["due_date"].ToString()) : null;
                     TasksStatus status = (TasksStatus)(long)reader["status"];
-                    Tag tag = new Tag((long)reader["tagid"], reader["tagname"].ToString(), ColorTranslator.FromHtml(reader["color"].ToString()));
+                    Tag tag = null;
+                    long? tagid = reader["tagid"] != DBNull.Value ? (long?)reader["tagid"] : null;
+                    if (tagid != null)
+                        tag = new Tag((long)reader["tagid"], reader["tagname"].ToString(), ColorTranslator.FromHtml(reader["color"].ToString()));
                     tasks.Add(new ProjectTask(id, name, description, dueDate, assignee, status, tag));
+
                 }
 
                 return tasks;
@@ -787,7 +802,7 @@ namespace CodeFlowBackend.Repositories
                 Open();
                 string query = @"select a.id, a.name, a.description, a.due_date, 
                         a.assignee, a.status, t.id as tagid, t.name as tagname, t.color from assignment a 
-                        left join tag t on a.project_id = t.project_id where a.project_id = @id and t.id = @tagId and a.tag_id = t.id;";
+                        LEFT JOIN tag t ON a.tag_id = t.id where a.project_id = @id and t.id = @tagId;";
                 _command = new SQLiteCommand(query, _connection);
                 _command.Parameters.AddWithValue("@id", projectId);
                 _command.Parameters.AddWithValue("@tagId", tagId);
@@ -799,9 +814,13 @@ namespace CodeFlowBackend.Repositories
                     string name = reader["name"].ToString();
                     string description = reader["description"].ToString();
                     string assignee = UserService.GetUsersUsernameById((long)reader["assignee"]);
-                    DateTime dueDate = DateTime.Parse(reader["due_date"].ToString());
+                    DateTime? dueDate = null;
+                    dueDate = reader["due_date"] != DBNull.Value ? DateTime.Parse(reader["due_date"].ToString()) : null;
                     TasksStatus status = (TasksStatus)(long)reader["status"];
-                    Tag tag = new Tag((long)reader["tagid"], reader["tagname"].ToString(), ColorTranslator.FromHtml(reader["color"].ToString()));
+                    Tag tag = null;
+                    long? tagid = reader["tagid"] != DBNull.Value ? (long?)reader["tagid"] : null;
+                    if (tagid != null)
+                        tag = new Tag((long)reader["tagid"], reader["tagname"].ToString(), ColorTranslator.FromHtml(reader["color"].ToString()));
                     tasks.Add(new ProjectTask(id, name, description, dueDate, assignee, status, tag));
                 }
 
@@ -837,9 +856,13 @@ namespace CodeFlowBackend.Repositories
                     string name = reader["name"].ToString();
                     string description = reader["description"].ToString();
                     string assignee = UserService.GetUsersUsernameById((long)reader["assignee"]);
-                    DateTime dueDate = DateTime.Parse(reader["due_date"].ToString());
+                    DateTime? dueDate = null;
+                    dueDate = reader["due_date"] != DBNull.Value ? DateTime.Parse(reader["due_date"].ToString()) : null;
                     TasksStatus status = (TasksStatus)(long)reader["status"];
-                    Tag tag = new Tag((long)reader["tagid"], reader["tagname"].ToString(), ColorTranslator.FromHtml(reader["color"].ToString()));
+                    Tag tag = null;
+                    long? tagid = reader["tagid"] != DBNull.Value ? (long?)reader["tagid"] : null;
+                    if (tagid != null)
+                        tag = new Tag((long)reader["tagid"], reader["tagname"].ToString(), ColorTranslator.FromHtml(reader["color"].ToString()));
 
                     Open();
                     query = @"select id, name, isDone from checklist where assignment_id = @taskId;";
@@ -1039,7 +1062,7 @@ namespace CodeFlowBackend.Repositories
                 Open();
                 string query = @"SELECT 
                     COUNT(*) AS TotalTasks,
-                    SUM(CASE WHEN status = 4 THEN 1 ELSE 0 END) AS ChecklistsDone FROM  assignment WHERE  project_id = @id;";
+                    SUM(CASE WHEN status = 4 THEN 1 ELSE 0 END) AS TasksDone FROM  assignment WHERE  project_id = @id;";
                 _command = new SQLiteCommand(query, _connection);
 
                 _command.Parameters.AddWithValue("@id", projectId);

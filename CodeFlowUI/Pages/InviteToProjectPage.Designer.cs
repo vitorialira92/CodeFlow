@@ -140,7 +140,7 @@ namespace CodeFlowUI.Pages
             this.projectCodeLabel.ForeColor = Colors.DarkBlue;
             this.projectCodeLabel.Font = new Font("Ubuntu", 16, FontStyle.Bold);
             this.projectCodeLabel.AutoSize = true;
-            this.projectCodeLabel.Location = new Point(28, 246);
+            this.projectCodeLabel.Location = new Point(450, 246);
 
             this.Controls.Add(this.projectCodeLabel);
 

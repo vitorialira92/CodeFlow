@@ -174,7 +174,7 @@ namespace CodeFlowUI.Pages
             this.specificToUserRoleLabel = new Label();
             this.specificToUserRoleLabel.AutoSize = true;
             this.specificToUserRoleLabel.Text = (user.IsTechLeader) ? "Specialization:" : "Experience level:";
-            this.specificToUserRoleLabel.Location = new Point(458, 478);
+            this.specificToUserRoleLabel.Location = new Point(422, 478);
             this.specificToUserRoleLabel.Font = new Font("Ubuntu", 12);
             this.specificToUserRoleLabel.ForeColor = Colors.DarkBlue;
 

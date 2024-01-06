@@ -15,7 +15,7 @@ namespace CodeFlowUI.Components
         private int _radius;
         internal RoundedButton(string text, int width, int height, Color backgroundColor, int radius)
         {
-
+            this.Cursor = Cursors.Hand;
             FlatStyle = FlatStyle.Flat;
             FlatAppearance.BorderSize = 0;
             _radius = radius;

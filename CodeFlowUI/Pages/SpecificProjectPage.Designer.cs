@@ -6,6 +6,7 @@ using CodeFlowUI.Components;
 using CodeFlowUI.Styles;
 using Microsoft.VisualBasic.ApplicationServices;
 using System.Reflection.PortableExecutable;
+using System.Threading.Tasks;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace CodeFlowUI.Pages
@@ -84,19 +85,22 @@ namespace CodeFlowUI.Pages
 
             List<TaskCardDTO> taskCardsCopy = new List<TaskCardDTO>(this.taskCardsDTO);
 
+            string username = UserService.GetUsersUsernameById(this.projectPageDTO.UserId);
+
             foreach (var task in taskCardsDTO)
             {
-                if (!tags.Contains(task.Tag.Name))
-                {
-                    tags.Add(task.Tag.Name);
-                    List<TaskCardDTO> list = new List<TaskCardDTO>(ProjectService.GetAllTasksByProjectIdAndTagId(this.projectPageDTO.ProjectId, task.Tag.Id));
-                    foreach (var item in list)
+                if(task.Tag != null)
+                    if (!tags.Contains(task.Tag.Name))
                     {
-                        if (!taskCardsCopy.Contains(item))
-                            taskCardsCopy.Add(item);
-                    }
+                        tags.Add(task.Tag.Name);
+                        List<TaskCardDTO> list = new List<TaskCardDTO>(ProjectService.GetAllTasksByProjectIdAndTagId(this.projectPageDTO.ProjectId, task.Tag.Id));
+                        foreach (var item in list)
+                        {
+                            if (!item.Assignee.Equals(username))
+                                taskCardsCopy.Add(item);
+                        }
 
-                }
+                    }
             }
 
             this.taskCardsDTO = new List<TaskCardDTO>(taskCardsCopy);
@@ -107,6 +111,10 @@ namespace CodeFlowUI.Pages
 
                 int y;
 
+                if (!this.projectPageDTO.IsUserTechLeader && task.DueDate == null)
+                {
+                    taskCard.Enabled = false;
+                }
 
                 switch (task.Status)
                 {
@@ -142,6 +150,7 @@ namespace CodeFlowUI.Pages
                     this.Hide();
                     new SpecificTaskPage(new OpenTaskPageDTO(this.projectPageDTO.UserId, task.Id, this.projectPageDTO.ProjectId, this.projectPageDTO.IsUserTechLeader)).Show();
                 });
+                
             }
 
             InitStats(todoCount, inProgressCount, reviewCount, doneCount);
