@@ -158,8 +158,8 @@ namespace CodeFlowUI.Pages
 
             dueDatePicker = new DateTimePicker();
             dueDatePicker.Location = new Point(844, 209);
-            dueDatePicker.MinDate = DateTime.Today;
             dueDatePicker.Value = this.projectOverviewDTO.dueDate;
+            dueDatePicker.MinDate = this.projectOverviewDTO.dueDate;
 
             this.Controls.Add(dueDatePicker);
         }
