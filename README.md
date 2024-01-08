@@ -149,6 +149,7 @@ Criação de task. Página disponível para todos os usuários.
 ![image](https://github.com/vitorialira92/CodeFlow/assets/48605624/70a0f67b-6838-4ac6-b85e-3abcab77a409)
 
 - Ao alterar o checklist da task o status do projeto também foi atualizado:
+  
 ![image](https://github.com/vitorialira92/CodeFlow/assets/48605624/7c917275-733c-475f-b6d5-fe5b043020e4)
 
 <h3>Convidar para um projeto</h3>
